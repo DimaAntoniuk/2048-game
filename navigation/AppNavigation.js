@@ -4,7 +4,7 @@ import Grid from '../screens/Grid'
 
 const AppNavigation = createStackNavigator(
     {
-        Home: { screen: MainMenu },
+        MainMenu: { screen: MainMenu },
         Grid: { screen: Grid }
     },
     {
