@@ -31,31 +31,82 @@ export default class Challenges extends Component {
                     numRows: 3,
                     gameMode: 'timer',
                     time: 90,
+                    step: 2,
                 },
                 {
                     numRows: 3,
                     gameMode: 'turns',
                     turns: 10,
+                    step: 2,
+                },
+                {
+                    numRows: 3,
+                    gameMode: '15 puzzle',
+                    step: 2,
+                },
+                {
+                    numRows: 3,
+                    gameMode: 'sum sequence',
+                    step: 1,
+                },
+                {
+                    numRows: 3,
+                    gameMode: 'inverted',
+                    step: 2,
                 },
                 {
                     numRows: 4,
                     gameMode: 'timer',
                     time: 90,
+                    step: 2,
                 },
                 {
                     numRows: 4,
                     gameMode: 'turns',
                     turns: 10,
+                    step: 2,
+                },
+                {
+                    numRows: 4,
+                    gameMode: '15 puzzle',
+                    step: 2,
+                },
+                {
+                    numRows: 4,
+                    gameMode: 'sum sequence',
+                    step: 1,
+                },
+                {
+                    numRows: 4,
+                    gameMode: 'inverted',
+                    step: 2,
                 },
                 {
                     numRows: 5,
                     gameMode: 'timer',
                     time: 90,
+                    step: 2,
                 },
                 {
                     numRows: 5,
                     gameMode: 'turns',
                     turns: 10,
+                    step: 2,
+                },
+                {
+                    numRows: 5,
+                    gameMode: '15 puzzle',
+                    step: 2,
+                },
+                {
+                    numRows: 5,
+                    gameMode: 'sum sequence',
+                    step: 1,
+                },
+                {
+                    numRows: 5,
+                    gameMode: 'inverted',
+                    step: 2,
                 },
             ],
         };

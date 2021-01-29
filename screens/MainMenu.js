@@ -39,6 +39,7 @@ export default class MainMenu extends Component {
         this.props.navigation.navigate('Grid', {
             numRows: 4,
             gameMode: 'classic',
+            step: 2,
         })
     }
 

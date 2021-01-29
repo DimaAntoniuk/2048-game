@@ -60,7 +60,7 @@ export default class GameClone extends Component {
       values[i] = null;
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.gameMode == '15 puzzle' ? 0 : this.state.step
     this.setState({ 
       positionValues : values,
       loading : false, 
@@ -169,7 +169,7 @@ export default class GameClone extends Component {
           }
           if(valueFoundBeforeTermination){
             if( values[check] == values[currentPositionNumber] && !newlyMerged.includes(check) ){
-              values[check] *= 2
+              values[check] = this.state.gameMode == 'sum sequence' ? values[check] + this.state.step : values[check] * this.state.step
               values[currentPositionNumber] = null
               score += values[check]
               newlyMerged.push(check)
@@ -187,7 +187,7 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values, score })
 
     if (this.state.gameMode == 'turns') {
@@ -223,7 +223,7 @@ export default class GameClone extends Component {
           }
           if(valueFoundBeforeTermination){
             if( values[check] == values[currentPositionNumber] && !newlyMerged.includes(check) ){
-              values[check] *= 2
+              values[check] = this.state.gameMode == 'sum sequence' ? values[check] + this.state.step : values[check] * this.state.step
               values[currentPositionNumber] = null
               score += values[check]
               newlyMerged.push(check)
@@ -241,7 +241,7 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values ,score })
 
     if (this.state.gameMode == 'turns') {
@@ -279,7 +279,7 @@ export default class GameClone extends Component {
           if(valueFoundBeforeTermination){
             var pos2 = check * numRow + boxNumber
             if( values[pos2] == values[currentPositionNumber] && !newlyMerged.includes(pos2) ){
-              values[pos2] *= 2;
+              values[pos2] = this.state.gameMode == 'sum sequence' ? values[pos2] + this.state.step : values[pos2] * this.state.step
               values[currentPositionNumber] = null
               score += values[pos2]
               newlyMerged.push(pos2)
@@ -298,7 +298,7 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
 
     if (this.state.gameMode == 'turns') {
@@ -336,7 +336,7 @@ export default class GameClone extends Component {
           if(valueFoundBeforeTermination){
             var pos2 = check * numRow + boxNumber
             if( values[pos2] == values[currentPositionNumber] && !newlyMerged.includes(pos2) ){
-              values[pos2] *= 2
+              values[pos2] = this.state.gameMode == 'sum sequence' ? values[pos2] + this.state.step : values[pos2] * this.state.step
               values[currentPositionNumber] = null
               score += values[pos2]
               newlyMerged.push(pos2)
@@ -355,7 +355,7 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
 
     if (this.state.gameMode == 'turns') {
@@ -379,7 +379,7 @@ export default class GameClone extends Component {
     for(var i = 1 ; i <= numRow ; i++){
       values.push({
         value :  val[ rowNumber * numRow + i ],
-        exponent : Math.log(val[ rowNumber * numRow + i ])/Math.log(2)
+        exponent : val[ rowNumber * numRow + i ] == 0 || this.state.gameMode == 'sum sequence' ? val[ rowNumber * numRow + i ] : Math.log(val[ rowNumber * numRow + i ])/Math.log(2)
       })
     }
     return(
@@ -413,10 +413,10 @@ export default class GameClone extends Component {
 
     return (
       <GestureRecognizer
-        onSwipeUp={this.checkUpSwipe}
-        onSwipeDown={this.checkDownSwipe}
-        onSwipeLeft={this.checkLeftSwipe}
-        onSwipeRight={this.checkRightSwipe}
+        onSwipeUp={this.state.gameMode == 'inverted' ? this.checkDownSwipe : this.checkUpSwipe}
+        onSwipeDown={this.state.gameMode == 'inverted' ? this.checkUpSwipe : this.checkDownSwipe}
+        onSwipeLeft={this.state.gameMode == 'inverted' ? this.checkRightSwipe : this.checkLeftSwipe}
+        onSwipeRight={this.state.gameMode == 'inverted' ? this.checkLeftSwipe : this.checkRightSwipe}
         style={styles.container}
       >
         <View style={styles.top}>
