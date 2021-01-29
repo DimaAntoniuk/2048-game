@@ -37,6 +37,7 @@ export default class GameClone extends Component {
       score : 0,
       fontLoaded : false,
       gameOver: false,
+      previousTurn: null,
       ...this.props.navigation.state.params
     };
   }
@@ -73,6 +74,8 @@ export default class GameClone extends Component {
               positionValues : data['grid'],
               loading : false, 
               score : data['score'],
+              gameOver: data.gameEnd,
+              previousTurn: null,
             })
           } else {
             var randomIndex = this.returnIndexForNew(values)
@@ -81,6 +84,9 @@ export default class GameClone extends Component {
               positionValues : values,
               loading : false, 
               score : 0,
+              gameOver: false,
+              previousTurn: null,
+              ...this.props.navigation.state.params
             })
           }
         })
@@ -95,6 +101,7 @@ export default class GameClone extends Component {
         loading : false, 
         score : 0,
         gameOver: false,
+        previousTurn: null,
         ...this.props.navigation.state.params
       })
     }
@@ -214,6 +221,12 @@ export default class GameClone extends Component {
     var score = this.state.score;
     var currentPositionNumber, newlyMerged = [], valueFoundBeforeTermination;
     var check;
+    this.setState({
+      previousTurn: {
+        values: Array.from(values), 
+        score: score
+      },
+    })
     for(var rowNumber = 0 ; rowNumber < numRow ; rowNumber++){
       for(var boxNumber = 2 ; boxNumber <= numRow ; boxNumber++){
         currentPositionNumber = rowNumber * numRow + boxNumber
@@ -272,6 +285,12 @@ export default class GameClone extends Component {
     var newlyMerged = []
     var numRow = this.state.numRows
     var score = this.state.score
+    this.setState({
+      previousTurn: {
+        values: Array.from(values), 
+        score: score
+      },
+    })
     for(var rowNumber = 0 ; rowNumber < numRow ; rowNumber++){
       for(var boxNumber = numRow - 1 ; boxNumber >= 1 ; boxNumber--){
         currentPositionNumber = rowNumber * numRow + boxNumber
@@ -330,6 +349,12 @@ export default class GameClone extends Component {
     var check,valueFoundBeforeTermination,positionToBeChecked;
     var newlyMerged = [];
     var score = this.state.score
+    this.setState({
+      previousTurn: {
+        values: Array.from(values), 
+        score: score
+      },
+    })
     for(var rowNumber = 1 ; rowNumber < numRow ; rowNumber++){
       for(var boxNumber = 1 ; boxNumber <= numRow ; boxNumber++){
         currentPositionNumber = rowNumber * numRow + boxNumber
@@ -391,6 +416,12 @@ export default class GameClone extends Component {
     var check,valueFoundBeforeTermination,positionToBeChecked;
     var newlyMerged = []
     var score = this.state.score
+    this.setState({
+      previousTurn: {
+        values: Array.from(values), 
+        score: score
+      },
+    })
     for(var rowNumber = numRow - 2 ; rowNumber >= 0 ; rowNumber--){
       for(var boxNumber = 1 ; boxNumber <= numRow ; boxNumber++){
         currentPositionNumber = rowNumber * numRow + boxNumber
@@ -475,6 +506,20 @@ export default class GameClone extends Component {
     return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds
   }
 
+  handleUndo = () => {
+    if (this.state.previousTurn != null) {
+      var prev = this.state.previousTurn
+      this.setState({
+        positionValues: prev.values,
+        score: prev.score,
+        previousTurn: null,
+      })
+      if (this.state.gameMode == 'classic') {
+        this.saveToFirestore(false, prev.values, prev.score)
+      }
+    }
+  }
+
   render() {
  
     if(this.state.loading || !this.state.fontLoaded){
@@ -496,10 +541,16 @@ export default class GameClone extends Component {
         <View style={styles.top}>
             <Text style={styles.score}>SCORE</Text>
             <Text style={styles.scoreCount}>{this.state.score}</Text>
-          <View style={styles.timerTurns}>
-            {this.state.gameMode == 'timer' ? <Text style={styles.timerTurnsText}>Time: {this.getTimerTime()}</Text> : <></>}
-            {this.state.gameMode == 'turns' ? <Text style={styles.timerTurnsText}>Turns: {this.state.turns}</Text> : <></>}
-          </View>
+            <View style={styles.timerTurns}>
+              {this.state.gameMode == 'timer' ? <Text style={styles.timerTurnsText}>Time: {this.getTimerTime()}</Text> : <></>}
+              {this.state.gameMode == 'turns' ? <Text style={styles.timerTurnsText}>Turns: {this.state.turns}</Text> : <></>}
+            </View>
+            <TouchableOpacity disabled={this.state.previousTurn == null ? true : false}
+                onPress={this.handleUndo}
+                style={styles.undo}
+            >
+                <Text style={this.state.previousTurn == null ? styles.unavailableUndoText : styles.undoText}>Undo</Text>
+            </TouchableOpacity>
         </View>
         <View style={styles.middle}>
           <View style={styles.box}>
@@ -596,5 +647,20 @@ const styles = StyleSheet.create({
     fontSize : 40,
     fontFamily : "Leaner",
     color : "#f42a71",
-  }
+  },
+  undo: {
+    position: 'absolute',
+    left: 20,
+    top: 120,
+  },
+  undoText: {
+    fontSize : 20,
+    fontFamily : "Montserrat",
+    color : "#f42a71",
+  },
+  unavailableUndoText: {
+    fontSize : 20,
+    fontFamily : "Montserrat",
+    color : "#94576c",
+  },
 })
