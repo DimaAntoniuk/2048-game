@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, TouchableOpacity, Image } from 'react-native';
 import firebase from '../api/firebase/firebase'
 
 
@@ -9,14 +9,24 @@ export default class MainMenu extends Component {
         displayName: ''
     };
 
-    static navigationOptions = {
+    static navigationOptions = ({navigation}) => ({
         title: '',
-        // headerShown: false,
+        gestureEnabled: false,
         headerStyle: {
             backgroundColor: '#1e252d',
             shadowColor: 'transparent',
-          },
-     }
+        },
+        headerLeft: () => (
+            <TouchableOpacity
+                onPress={() => {navigation.navigate('Auth')}}
+            >
+                <Image
+                    style={{width: 27, height: 27, marginLeft: 15, marginTop: 5}}
+                    source={require('../assets/logout2-left.png')}
+                />  
+            </TouchableOpacity>
+        ),
+    })
 
     signOut = () => {
         firebase.auth().signOut().then(() => {
@@ -26,7 +36,15 @@ export default class MainMenu extends Component {
     };
 
     startGame = () => {
-        this.props.navigation.navigate('Grid')
+        this.props.navigation.navigate('Grid', {
+            numRows: 4,
+            gameMode: 'classic',
+            step: 2,
+        })
+    }
+
+    handleChallenges = () => {
+        this.props.navigation.navigate('Challenges')
     }
 
     render() {
@@ -38,34 +56,30 @@ export default class MainMenu extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.welcome}>
-                <Text style = {styles.welcomeText}>
-                    Welcome, {this.state.displayName}
-                </Text>
-                {/* <Pressable style={styles.signOutBtn} onPress={this.signOut}>
-                    <Text style={styles.btnText}>Sign me out!</Text>
-                </Pressable> */}
+                    <Text style = {styles.welcomeText}>
+                        Welcome, {this.state.displayName}
+                    </Text>
                 </View>
                 <View style={styles.infoContainer}>
-                <Text style={styles.infoText}>This is </Text><Text style={styles.infoText2048}>2048</Text>
-                {/* <Text style={styles.infoText}>Match the numbers and get to the 2048 tile!</Text> */}
+                    <Text style={styles.infoText}>This is </Text><Text style={styles.infoText2048}>2048</Text>
                 </View>
                 <View style={styles.btnsContainer}>
                     <Pressable style={styles.btnsHelp} > 
-                    <Text style={styles.btnText}>How to Play</Text>
+                        <Text style={styles.btnText}>How to Play</Text>
                     </Pressable>
                     <Pressable style={styles.btnsHelp} >
-                    <Text style={styles.btnText}>Leaderboard</Text>
+                        <Text style={styles.btnText}>Leaderboard</Text>
                     </Pressable>
                 </View>
                 <View style={styles.challengeContainer}>
-                    <Pressable style={styles.chalBtn} >
-                    <Text style={styles.chalText}>Challenges</Text>
+                    <Pressable style={styles.chalBtn} onPress={this.handleChallenges}>
+                        <Text style={styles.chalText}>Challenges</Text>
                     </Pressable>
                 </View>
                 <View style={styles.bottom}>
-                <Pressable style={styles.playBtn} onPress={this.startGame}>
-                    <Text style={styles.btnTextPlay}>Play</Text>
-                </Pressable>
+                    <Pressable style={styles.playBtn} onPress={this.startGame}>
+                        <Text style={styles.btnTextPlay}>Play</Text>
+                    </Pressable>
                 </View>
             </View>
         );

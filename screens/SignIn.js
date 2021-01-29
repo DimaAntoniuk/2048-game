@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet, View, TextInput, Text, Alert, Pressable} from 'react-native'
+import {StyleSheet, View, TextInput, Text, Alert, Pressable, ActivityIndicator} from 'react-native'
 import firebase from '../api/firebase/firebase'
 import * as Font from 'expo-font';
 
@@ -24,7 +24,7 @@ export default class SignIn extends React.Component {
         fontsLoaded: false,
     };
     
-    async _loadFontsAsync() {
+    _loadFontsAsync = async () => {
         await Font.loadAsync(customFonts);
         this.setState({ fontsLoaded: true });
     }
@@ -136,6 +136,14 @@ export default class SignIn extends React.Component {
     goToSignup = () => this.props.navigation.navigate('SignUp');
 
     render() {
+        if(!this.state.fontsLoaded){
+            return(
+              <View style={styles.container}>
+                <ActivityIndicator />
+              </View>
+            )
+          }
+
         return (   
             <View style={styles.container}>
                 <View style={styles.top}>
