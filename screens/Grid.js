@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Font from 'expo-font';
+import db from '../api/firebase/firebase'
+
 
 export default class GameClone extends Component {
  
@@ -99,7 +101,30 @@ export default class GameClone extends Component {
     return gameOver;
   }
 
+  saveToFirestore = (gameEnd, grid, score) => {
+    const doc = db.collection('flex-users').doc(firebase.auth().currentUser.uid.toString()).get() 
+    if (doc.exists) {
+      var data = doc.data()
+      var highScore = data['highScore']
+      data = {
+        gameEnd: gameEnd,
+        grid: grid,
+        score: score,
+        highScore: highScore>this.state.score?highScore:this.state.score
+      }
+      var userRef = db.collection('flex-users').doc(firebase.auth().currentUser.uid.toString()).set(data)
+    } else {
+      var userRef = db.collection('flex-users').doc(firebase.auth().currentUser.uid.toString()).set({
+        gameEnd: gameEnd,
+        grid: grid,
+        score: score,
+        highScore: this.state.score
+      })
+    }
+  }
+
   gameOver = () => {
+    this.saveToFirestore(true, [], 0)
     Alert.alert(
       'Game Over!!!',
       `Your score is ${this.state.score}`,
