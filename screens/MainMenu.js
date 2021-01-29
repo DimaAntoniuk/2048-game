@@ -51,7 +51,7 @@ export default class MainMenu extends Component {
                 </View>
                 <View style={styles.btnsContainer}>
                     <Pressable style={styles.btnsHelp} > 
-                    <Text style={styles.btnText}>Rules</Text>
+                    <Text style={styles.btnText}>How to Play</Text>
                     </Pressable>
                     <Pressable style={styles.btnsHelp} >
                     <Text style={styles.btnText}>Leaderboard</Text>

@@ -141,7 +141,6 @@ export default class SignIn extends React.Component {
                 <View style={styles.top}>
                     <Text style={styles.topText}>2048</Text>
                 </View>
-                <DismissKeyboard>
                 <View style={styles.bottom}>
                     <TextInput
                     style={styles.inputView}
@@ -180,7 +179,6 @@ export default class SignIn extends React.Component {
                     <Text style={styles.signUpText}>sign up</Text>
                 </Pressable>
             </View>
-            </DismissKeyboard>
         </View>
         )
     }
