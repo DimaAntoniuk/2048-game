@@ -1,24 +1,20 @@
 import React from 'react'
-import {StyleSheet, View, TextInput, Text, Alert, Pressable, Keyboard, TouchableWithoutFeedback, ScrollView} from 'react-native'
-import AppLoading from 'expo-app-loading';
+import {StyleSheet, View, TextInput, Text, Alert, Pressable} from 'react-native'
 import firebase from '../api/firebase/firebase'
 import * as Font from 'expo-font';
+
 
 let customFonts = {
     'Cassanet': require('../assets/fonts/cassannet_plus_regular.ttf'),
     'Mont-Bold' : require("../assets/fonts/Montserrat-Bold.ttf"),
     'Montserrat' : require("../assets/fonts/Montserrat-Medium.ttf"),
-    'Superstar-M54' : require("../assets/fonts/Superstar-M54.ttf"),
     'Robinson' : require("../assets/fonts/Robinson-Regular.otf"),
     'numb3rs' : require("../assets/fonts/numbrs-regular-webfont.ttf"),
     'Leaner' : require("../assets/fonts/Leaner-Thin.ttf"),
     'RobOut' : require("../assets/fonts/Robinson-Outline.otf"),
   };
-  const DismissKeyboard = ({ children }) => (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      {children}
-    </TouchableWithoutFeedback>
-  );
+
+
 export default class SignIn extends React.Component {
     state = {
         email: '',
@@ -140,20 +136,7 @@ export default class SignIn extends React.Component {
     goToSignup = () => this.props.navigation.navigate('SignUp');
 
     render() {
-        // if (this.state.fontsLoaded) {
-        //     return (
-        //       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        //         <Text>Platform Default</Text>
-        //         <Text style={{ fontFamily: 'RobOut' }}>Inter Black</Text>
-        //         {/* <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text> */}
-        //       </View>
-        //     );
-        //   } else {
-        //     return <AppLoading />;
-        //   }
-        
         return (   
-            // <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps='handled' style={styles.container}>
             <View style={styles.container}>
                 <View style={styles.top}>
                     <Text style={styles.topText}>2048</Text>
@@ -199,7 +182,6 @@ export default class SignIn extends React.Component {
             </View>
             </DismissKeyboard>
         </View>
-        // </ScrollView>
         )
     }
 }
@@ -208,8 +190,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#1e252d',
-        // alignItems: 'center',
-        // justifyContent: 'center',
         flexDirection : "column",
     },
     top : {
@@ -219,7 +199,6 @@ const styles = StyleSheet.create({
       },
     bottom : {
         flex : 3,
-        // justifyContent : "center",
         alignItems : "center"
     },
     topText: {

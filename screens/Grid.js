@@ -11,10 +11,6 @@ export default class GameClone extends Component {
       backgroundColor: '#1e252d',
       shadowColor: 'transparent',
     },
-    // headerTitleStyle: {
-    //     color: '#f42a71',
-    //     fontWeight: 'bold',
-    // }, 
  }
 
 
@@ -23,7 +19,7 @@ export default class GameClone extends Component {
     this.state = {
       loading : true,
       backgroundColors : ["#616C6F", "#3a4ae7","#5343e6", "#7442dd","#9942db", "#b93ee3","#d23be1", "#e237d1","#ec36ba", "#f433a0",
-      "#f73087","#ff2f79","#487EB0"],
+      "#f73087","#ff2f79","#ff005b"],
       numRows : 4,
       score : 0,
       fontLoaded : false,
@@ -64,8 +60,6 @@ export default class GameClone extends Component {
     await Font.loadAsync({
       'Mont-Bold' : require("../assets/fonts/Montserrat-Bold.ttf"),
       'Montserrat' : require("../assets/fonts/Montserrat-Medium.ttf"),
-      'Roboto' : require("../assets/fonts/Roboto-Regular.ttf"),
-      'SFProDisplay' : require("../assets/fonts/SFProDisplay-Regular.ttf"),
     })
     this.setState({ fontLoaded : true })
   }
@@ -366,7 +360,6 @@ export default class GameClone extends Component {
         <View style={styles.top}>
             <Text style={styles.score}>SCORE</Text>
             <Text style={styles.scoreCount}>{this.state.score}</Text>
-            {/* <Text style={styles.score}>Join the numbers and get to the 2048 tile!</Text> */}
         </View>
         <View style={styles.middle}>
           <View style={styles.box}>
@@ -446,9 +439,6 @@ const styles = StyleSheet.create({
   score : {
     fontSize : 25,
     fontFamily : "Montserrat",
-    // position : "absolute",
-    // right : 20,
-    // top : 120,
     color : "#f42a71",
   },
   scoreCount: {

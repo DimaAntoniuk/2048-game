@@ -50,15 +50,15 @@ export default class MainMenu extends Component {
                 {/* <Text style={styles.infoText}>Match the numbers and get to the 2048 tile!</Text> */}
                 </View>
                 <View style={styles.btnsContainer}>
-                    <Pressable style={styles.btnsHelp} onPress={this.signOut}>
+                    <Pressable style={styles.btnsHelp} > 
                     <Text style={styles.btnText}>Rules</Text>
                     </Pressable>
-                    <Pressable style={styles.btnsHelp} onPress={this.signOut}>
+                    <Pressable style={styles.btnsHelp} >
                     <Text style={styles.btnText}>Leaderboard</Text>
                     </Pressable>
                 </View>
                 <View style={styles.challengeContainer}>
-                    <Pressable style={styles.chalBtn} onPress={this.signOut}>
+                    <Pressable style={styles.chalBtn} >
                     <Text style={styles.chalText}>Challenges</Text>
                     </Pressable>
                 </View>
@@ -76,9 +76,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#1e252d',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        // padding: 35,
     },
     welcome: {
         flex: 1.5,
