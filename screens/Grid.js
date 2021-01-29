@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Font from 'expo-font';
+import {db, firebase} from '../api/firebase/firebase'
+
 
 export default class GameClone extends Component {
  
@@ -59,15 +61,44 @@ export default class GameClone extends Component {
     for(var i = 1; i <= numRow*numRow ; i++){
       values[i] = null;
     }
-    var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = this.state.gameMode == '15 puzzle' ? 0 : this.state.step
-    this.setState({ 
-      positionValues : values,
-      loading : false, 
-      score : 0,
-      gameOver: false,
-      ...this.props.navigation.state.params
-    })
+
+    if (this.state.gameMode == 'classic') {
+      var uid = this.props.navigation.state.params.uid
+      db.collection('flex-users').doc(uid.toString()).get()
+        .then(doc => {
+          const data = doc.data();
+          console.log(data)
+          if (data && !data.get('gameEnd', true)) {
+            this.setState({ 
+              positionValues : data['grid'],
+              loading : false, 
+              score : data['score'],
+            })
+          } else {
+            var randomIndex = this.returnIndexForNew(values)
+            values[randomIndex] = 2
+            this.setState({ 
+              positionValues : values,
+              loading : false, 
+              score : 0,
+            })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting documents', err);
+        });
+    } else {
+      var randomIndex = this.returnIndexForNew(values)
+      values[randomIndex] = this.state.gameMode == '15 puzzle' ? 0 : this.state.step
+      this.setState({ 
+        positionValues : values,
+        loading : false, 
+        score : 0,
+        gameOver: false,
+        ...this.props.navigation.state.params
+      })
+    }
+
     this.loadFonts()
 
     if (this.state.gameMode == 'timer') {
@@ -135,7 +166,32 @@ export default class GameClone extends Component {
     return gameOver;
   }
 
+  saveToFirestore = (gameEnd, grid, score) => {
+    var uid = this.props.navigation.state.params.uid
+    console.log('flex-users')
+    db.collection('flex-users').doc(uid.toString()).get()
+      .then(doc => {
+        const data = doc.data();
+        console.log(doc.id, data);
+        var highScore = data?data['highScore']:0
+        if (this.state.score > highScore) {
+          highScore = score
+        }
+        var new_data = {
+          gameEnd: gameEnd,
+          grid: grid,
+          score: score,
+          highScore: highScore
+        }
+        var userRef = db.collection('flex-users').doc(uid).set(new_data)
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
+  }
+
   gameOver = () => {
+    this.saveToFirestore(true, this.state.positionValues, this.state.score)
     this.setState({
       gameOver: true,
     })
@@ -189,6 +245,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = this.state.step
     this.setState({ positionValues : values, score })
+    
+    if (this.state.gameMode == 'classic') {
+     this.saveToFirestore(false, values, this.state.score)
+    }
 
     if (this.state.gameMode == 'turns') {
       var newTurns = this.state.turns - 1 + newlyMerged.length
@@ -243,6 +303,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = this.state.step
     this.setState({ positionValues : values ,score })
+    
+    if (this.state.gameMode == 'classic') {
+     this.saveToFirestore(false, values, this.state.score)
+    }
 
     if (this.state.gameMode == 'turns') {
       var newTurns = this.state.turns - 1 + newlyMerged.length
@@ -300,6 +364,7 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
+    this.saveToFirestore(false, values, this.state.score)
 
     if (this.state.gameMode == 'turns') {
       var newTurns = this.state.turns - 1 + newlyMerged.length
@@ -357,6 +422,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
+    
+    if (this.state.gameMode == 'classic') {
+     this.saveToFirestore(false, values, this.state.score)
+    }
 
     if (this.state.gameMode == 'turns') {
       var newTurns = this.state.turns - 1 + newlyMerged.length
