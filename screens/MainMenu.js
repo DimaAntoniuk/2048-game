@@ -36,6 +36,7 @@ export default class MainMenu extends Component {
     };
 
     startGame = () => {
+<<<<<<< HEAD
         this.props.navigation.navigate('Grid', {
             uid: firebase.auth().currentUser.uid,
             numRows: 4,
@@ -46,6 +47,9 @@ export default class MainMenu extends Component {
 
     handleChallenges = () => {
         this.props.navigation.navigate('Challenges')
+=======
+        this.props.navigation.navigate('Grid', {uid: firebase.auth().currentUser.uid, username: firebase.auth().currentUser.displayName})
+>>>>>>> d9be8f8 (add bare leaderboard)
     }
 
     render() {
