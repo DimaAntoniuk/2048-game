@@ -567,8 +567,8 @@ export default class GameClone extends Component {
           </View>
         </View>
         <View style={styles.bottom}>
-            <Text style={styles.score}>HIGH SCORE</Text>
-            <Text style={styles.scoreCount}>{this.state.highScore}</Text>
+            {this.state.gameMode == 'classic' ? <Text style={styles.score}>HIGH SCORE</Text> : <></> }
+            {this.state.gameMode == 'classic' ? <Text style={styles.scoreCount}>{this.state.highScore}</Text> : <></> }
         </View>
       </GestureRecognizer>
     );
