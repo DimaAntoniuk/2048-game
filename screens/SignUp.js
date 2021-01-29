@@ -172,13 +172,14 @@ export default class SignUp extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.signUpTitle}>Registration Form</Text>
-                <Text style={styles.fieldTitle}>Enter Name</Text>
+                <Text style={styles.signUpTitle}>Register to Play</Text>
+                {/* <Text style={styles.fieldTitle}>Enter Name</Text> */}
                     <TextInput style={styles.inputView}
+                        keyboardAppearance='dark'
                         name='name'
                         value={this.state.name}
                         placeholder='name...'
-                        placeholderTextColor="#D3D3D3"
+                        placeholderTextColor="#7d7d7d"
                         autoCapitalize='none'
                         onChangeText={this.nameHandler}
                         onBlur={() => this.nameValidation()}
@@ -187,12 +188,13 @@ export default class SignUp extends React.Component {
                         style={styles.error}>
                         {this.state.nameError ? 'wrong input' : ''}
                     </Text>
-                    <Text style={styles.fieldTitle}>Enter Phone</Text>
+                    {/* <Text style={styles.fieldTitle}>Enter Phone</Text> */}
                     <TextInput style={styles.inputView}
+                        keyboardAppearance='dark'
                         name='phone'
                         value={this.state.phone}
                         placeholder='phone...'
-                        placeholderTextColor="#D3D3D3"
+                        placeholderTextColor="#7d7d7d"
                         autoCapitalize='none'
                         keyboardType='numeric'
                         onChangeText={this.phoneHandler}
@@ -202,12 +204,13 @@ export default class SignUp extends React.Component {
                         style={styles.error}>
                         {this.state.phoneError ? 'wrong input' : ''}
                     </Text>
-                    <Text style={styles.fieldTitle}>Enter Email</Text>
+                    {/* <Text style={styles.fieldTitle}>Enter Email</Text> */}
                     <TextInput style={styles.inputView}
+                        keyboardAppearance='dark'
                         name='email'
                         value={this.state.email}
                         placeholder='email...'
-                        placeholderTextColor="#D3D3D3"
+                        placeholderTextColor="#7d7d7d"
                         autoCapitalize='none'
                         onChangeText={this.emailHandler}
                         onBlur={() => this.emailValidation()}
@@ -216,12 +219,13 @@ export default class SignUp extends React.Component {
                         style={styles.error}>
                         {this.state.emailError ? 'wrong input' : ''}
                     </Text>
-                    <Text style={styles.fieldTitle}>Enter Password</Text>
+                    {/* <Text style={styles.fieldTitle}>Enter Password</Text> */}
                     <TextInput style={styles.inputView}
+                        keyboardAppearance='dark'
                         name='password'
                         value={this.state.password}
                         placeholder='password...'
-                        placeholderTextColor="#D3D3D3"
+                        placeholderTextColor="#7d7d7d"
                         secureTextEntry
                         onChangeText={this.passwordHandler}
                         onBlur={() => this.passwordValidation()}
@@ -231,11 +235,11 @@ export default class SignUp extends React.Component {
                         {this.state.passwordError ? 'wrong input' : ''}
                     </Text>
                 <Pressable style={styles.signUpBtn} onPress={this.onSignup}>
-                    <Text>SIGN UP</Text>
+                    <Text style={styles.signUpText}>SIGN UP</Text>
                 </Pressable>
-                <Text >Already have an account?</Text>
+                <Text style={styles.accountText}>Already have an account?</Text>
                 <Pressable style={styles.signInBtn} onPress={this.goToSignIn}>
-                    <Text style={styles.fieldTitle}>Sign In</Text>
+                    <Text style={styles.signInText}>Sign In</Text>
                 </Pressable>
             </View>
         )
@@ -245,38 +249,48 @@ export default class SignUp extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#7395AE',
+        backgroundColor: '#1e252d',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     signUpTitle: {
         marginBottom: 40,
-        color: '#fff',
+        color: '#f42a71',
         fontSize: 25,
+        fontFamily: 'Montserrat'
     },
     fieldTitle: {
         marginBottom: 5,
-        color: '#fff'
+        color: '#fff',
+        fontFamily: 'Montserrat'
     },
     inputView: {
         width: "80%",
-        backgroundColor: "#557A95",
+        backgroundColor: "#1a1f26",
         borderRadius: 5,
         height: 50,
         marginBottom: 5,
         justifyContent: "center",
         padding: 15,
-        color: '#fff'
+        color: '#fff',
+        fontFamily: 'Montserrat'
     },
     signUpBtn: {
         width: "80%",
-        backgroundColor: "#E5989B",
+        backgroundColor: "#f42a71",
         borderRadius: 5,
         height: 50,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20,
         marginBottom: 10,
+    },
+    signUpText: {
+        fontFamily: 'Montserrat'
+    },
+    accountText: {
+        color: 'white',
+        fontFamily: 'Montserrat'
     },
     signInBtn: {
         // width: "100%",
@@ -285,10 +299,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginTop: 0,
         marginBottom: 10,
-        color: "#E5989B"
+    },
+    signInText: {
+        color: "#f42a71",
+        fontFamily: 'Montserrat'
     },
     error: {
-        color: "#e83810",
+        color: "red",
         marginBottom: 5,
     },
 });
