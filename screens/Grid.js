@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Font from 'expo-font';
 
 export default class GameClone extends Component {
@@ -56,8 +56,8 @@ export default class GameClone extends Component {
 
   loadFonts = async() => {
     await Font.loadAsync({
-      'Satisfy' : require("./assets/fonts/Satisfy-Regular.ttf"),
-      'Caveat' : require("./assets/fonts/Caveat-Regular.ttf"),
+      'Satisfy' : require("../assets/fonts/Satisfy-Regular.ttf"),
+      'Caveat' : require("../assets/fonts/Caveat-Regular.ttf"),
     })
     this.setState({ fontLoaded : true })
   }
