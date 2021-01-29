@@ -72,9 +72,9 @@ export default class MainMenu extends Component {
                     <Pressable style={styles.btnsHelp} onPress={this.howToPlay}> 
                         <Text style={styles.btnText}>How to Play</Text>
                     </Pressable>
-                    <Pressable style={styles.btnsHelp} >
+                    {/* <Pressable style={styles.btnsHelp} >
                         <Text style={styles.btnText}>Leaderboard</Text>
-                    </Pressable>
+                    </Pressable> */}
                 </View>
                 <View style={styles.challengeContainer}>
                     <Pressable style={styles.chalBtn} onPress={this.handleChallenges}>
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     btnsContainer: {
         flex: 1.8,
         justifyContent : "center",
-        flexDirection: 'row',
+        // flexDirection: 'row',
         alignItems : 'center',
     },
     challengeContainer: {
