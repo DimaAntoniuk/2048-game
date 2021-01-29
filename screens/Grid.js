@@ -39,13 +39,30 @@ export default class GameClone extends Component {
     for(var i = 1; i <= numRow*numRow ; i++){
       values[i] = null;
     }
-    var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
-    this.setState({ 
-      positionValues : values,
-      loading : false, 
-      score : 0,
-    })
+    var uid = this.props.navigation.state.params.uid
+    db.collection('flex-users').doc(uid.toString()).get()
+      .then(doc => {
+        const data = doc.data();
+        console.log(data)
+        if (data && !data.get('gameEnd', true)) {
+          this.setState({ 
+            positionValues : data['grid'],
+            loading : false, 
+            score : data['score'],
+          })
+        } else {
+          var randomIndex = this.returnIndexForNew(values)
+          values[randomIndex] = 2
+          this.setState({ 
+            positionValues : values,
+            loading : false, 
+            score : 0,
+          })
+        }
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
     this.loadFonts()
   }
 
@@ -104,12 +121,11 @@ export default class GameClone extends Component {
   saveToFirestore = (gameEnd, grid, score) => {
     var uid = this.props.navigation.state.params.uid
     console.log('flex-users')
-    const doc = db.collection('flex-users').doc(uid.toString()).get()
     db.collection('flex-users').doc(uid.toString()).get()
       .then(doc => {
         const data = doc.data();
         console.log(doc.id, data);
-        var highScore = data['highScore']
+        var highScore = data?data['highScore']:0
         if (this.state.score > highScore) {
           highScore = score
         }
@@ -127,7 +143,7 @@ export default class GameClone extends Component {
   }
 
   gameOver = () => {
-    this.saveToFirestore(true, [], this.state.score)
+    this.saveToFirestore(true, this.state.positionValues, this.state.score)
     Alert.alert(
       'Game Over!!!',
       `Your score is ${this.state.score}`,
@@ -178,7 +194,7 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values, score })
-
+    this.saveToFirestore(false, values, this.state.score)
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -224,7 +240,7 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values ,score })
-
+    this.saveToFirestore(false, values, this.state.score)
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -273,7 +289,7 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values , score })
-
+    this.saveToFirestore(false, values, this.state.score)
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -322,7 +338,7 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values , score })
-
+    this.saveToFirestore(false, values, this.state.score)
     if (this.isGameOver()) {
       this.gameOver();
     }
