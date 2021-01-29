@@ -38,6 +38,7 @@ export default class GameClone extends Component {
       fontLoaded : false,
       gameOver: false,
       previousTurn: null,
+      highScore: 0,
       ...this.props.navigation.state.params
     };
   }
@@ -76,6 +77,7 @@ export default class GameClone extends Component {
               score : data['score'],
               gameOver: data.gameEnd,
               previousTurn: null,
+              highScore: data?data.highScore:0
             })
           } else {
             var randomIndex = this.returnIndexForNew(values)
@@ -180,10 +182,13 @@ export default class GameClone extends Component {
       .then(doc => {
         const data = doc.data();
         console.log(doc.id, data);
-        var highScore = data?data['highScore']:0
+        var highScore = data?data.highScore:0
         if (this.state.score > highScore) {
           highScore = score
         }
+        this.setState({
+          highScore: highScore,
+        })
         var new_data = {
           gameEnd: gameEnd,
           grid: grid,
@@ -560,6 +565,8 @@ export default class GameClone extends Component {
           </View>
         </View>
         <View style={styles.bottom}>
+            <Text style={styles.score}>HIGH SCORE</Text>
+            <Text style={styles.scoreCount}>{this.state.highScore}</Text>
         </View>
       </GestureRecognizer>
     );
@@ -587,7 +594,6 @@ const styles = StyleSheet.create({
     flex : 3,
     alignItems : "center",
     justifyContent : "center",
-    flexDirection : "row"
   },
   box : {
     flex : 1,
