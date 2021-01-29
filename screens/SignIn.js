@@ -1,6 +1,5 @@
 import React from 'react'
-import {StyleSheet, View, TextInput, Text, Alert, Pressable, Keyboard, TouchableWithoutFeedback, ScrollView} from 'react-native'
-import AppLoading from 'expo-app-loading';
+import {StyleSheet, View, TextInput, Text, Alert, Pressable, Keyboard, TouchableWithoutFeedback, ScrollView, ActivityIndicator} from 'react-native'
 import firebase from '../api/firebase/firebase'
 import * as Font from 'expo-font';
 
@@ -28,7 +27,7 @@ export default class SignIn extends React.Component {
         fontsLoaded: false,
     };
     
-    async _loadFontsAsync() {
+    _loadFontsAsync = async () => {
         await Font.loadAsync(customFonts);
         this.setState({ fontsLoaded: true });
     }
@@ -152,6 +151,14 @@ export default class SignIn extends React.Component {
         //     return <AppLoading />;
         //   }
         
+        if(!this.state.fontsLoaded){
+            return(
+              <View style={styles.container}>
+                <ActivityIndicator />
+              </View>
+            )
+          }
+
         return (   
             // <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps='handled' style={styles.container}>
             <View style={styles.container}>

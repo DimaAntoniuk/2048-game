@@ -326,21 +326,13 @@ export default class GameClone extends Component {
     }
     return(
       <View style={styles.row}>
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[0].exponent] }]}>
-          <Text style={styles.boxText}> { values[0].value } </Text>      
-        </View>
-
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[1].exponent] }]}>
-          <Text style={styles.boxText}> { values[1].value } </Text>
-        </View>
-
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[2].exponent] }]}>
-          <Text style={styles.boxText}> { values[2].value } </Text>       
-        </View>
-        
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[3].exponent] }]}>
-          <Text style={styles.boxText}> { values[3].value } </Text>
-        </View>
+        {
+          values.map((item, key) => (
+            <View key={key} style={[styles.eachBox,{ backgroundColor : Colors[item.exponent] }]}>
+              <Text style={styles.boxText}> { item.value } </Text>      
+            </View>
+          ))
+        }
       </View>
     )
   }
@@ -370,10 +362,11 @@ export default class GameClone extends Component {
         </View>
         <View style={styles.middle}>
           <View style={styles.box}>
-            {this.returnRow(0)}
-            {this.returnRow(1)}
-            {this.returnRow(2)}
-            {this.returnRow(3)}
+            {
+              [...Array(this.state.numRows).keys()].map((item, key) => (
+                this.returnRow(item)
+              ))
+            }
           </View>
         </View>
         <View style={styles.bottom}>
