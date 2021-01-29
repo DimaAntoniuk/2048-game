@@ -10,13 +10,12 @@ export default class MainMenu extends Component {
     };
 
     static navigationOptions = {
-        title: 'Main Menu',
+        title: '',
+        // headerShown: false,
         headerStyle: {
-          backgroundColor: '#557A95'
-        },
-        headerTitleStyle: {
-            color: 'white'
-        }
+            backgroundColor: '#1e252d',
+            shadowColor: 'transparent',
+          },
      }
 
     signOut = () => {
@@ -38,15 +37,36 @@ export default class MainMenu extends Component {
 
         return (
             <View style={styles.container}>
+                <View style={styles.welcome}>
                 <Text style = {styles.welcomeText}>
                     Welcome, {this.state.displayName}
                 </Text>
-                <Pressable style={styles.signOutBtn} onPress={this.signOut}>
+                {/* <Pressable style={styles.signOutBtn} onPress={this.signOut}>
                     <Text style={styles.btnText}>Sign me out!</Text>
+                </Pressable> */}
+                </View>
+                <View style={styles.infoContainer}>
+                <Text style={styles.infoText}>This is </Text><Text style={styles.infoText2048}>2048</Text>
+                {/* <Text style={styles.infoText}>Match the numbers and get to the 2048 tile!</Text> */}
+                </View>
+                <View style={styles.btnsContainer}>
+                    <Pressable style={styles.btnsHelp} onPress={this.signOut}>
+                    <Text style={styles.btnText}>Rules</Text>
+                    </Pressable>
+                    <Pressable style={styles.btnsHelp} onPress={this.signOut}>
+                    <Text style={styles.btnText}>Leaderboard</Text>
+                    </Pressable>
+                </View>
+                <View style={styles.challengeContainer}>
+                    <Pressable style={styles.chalBtn} onPress={this.signOut}>
+                    <Text style={styles.chalText}>Challenges</Text>
+                    </Pressable>
+                </View>
+                <View style={styles.bottom}>
+                <Pressable style={styles.playBtn} onPress={this.startGame}>
+                    <Text style={styles.btnTextPlay}>Play</Text>
                 </Pressable>
-                <Pressable style={styles.signOutBtn} onPress={this.startGame}>
-                    <Text style={styles.btnText}>Play</Text>
-                </Pressable>
+                </View>
             </View>
         );
     }
@@ -55,27 +75,116 @@ export default class MainMenu extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#7395AE',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 35,
+        backgroundColor: '#1e252d',
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        // padding: 35,
+    },
+    welcome: {
+        flex: 1.5,
+        justifyContent : "center",
+        alignItems : "center",
+    },
+    infoContainer: {
+        flex: 3,
+        justifyContent : "center",
+        alignItems : 'center',
+    },
+    btnsContainer: {
+        flex: 1.8,
+        justifyContent : "center",
+        flexDirection: 'row',
+        alignItems : 'center',
+    },
+    challengeContainer: {
+        flex: 0.1,
+        justifyContent : "center",
+        // flexDirection: 'row',
+        alignItems : 'center',
+    },
+    bottom:{
+        flex: 5,
+        justifyContent : "center",
+        alignItems : "center",
     },
     signOutBtn: {
-        width: "80%",
-        backgroundColor: "#E5989B",
+        width: "30%",
+        backgroundColor: "#f42a71",
         borderRadius: 5,
-        height: 60,
+        height: 30,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 30,
+        marginTop: 10,
         marginBottom: 10,
     },
+    playBtn: {
+        width: 150,
+        height: 150,
+        backgroundColor: "#f42a71",
+        borderRadius: 150 / 2,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    btnsHelp: {
+        width: "30%",
+        // backgroundColor: "#f42a71",
+        borderRadius: 5,
+        borderWidth:2,
+        borderColor: '#f42a71',
+        height: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
+        marginBottom: 10,
+        margin: 15
+    },
+    chalBtn: {
+        width: "40%",
+        backgroundColor: "#f42a71",
+        borderRadius: 5,
+        height: 45,
+        alignItems: "center",
+        justifyContent: "center",
+        // marginTop: 10,
+        // marginBottom: 10,
+        // margin: 15
+    },
     btnText: {
-        fontSize:20,
+        fontSize: 14,
+        fontFamily: 'Montserrat',
+        color: '#f42a71'
+        // color: '#fff'
+
+    },
+    chalText: {
+        fontSize: 18,
+        fontFamily: 'Montserrat',
+        // color: '#fff'
+    },
+    btnTextPlay: {
+        fontSize:33,
+        fontFamily: 'Montserrat',
+        color: '#fff'
 
     },
     welcomeText: {
         color: '#fff',
         fontSize: 30,
+        fontFamily: 'Montserrat'
     },
+    infoText: {
+        width: '80%',
+        color: '#fff',
+        fontSize: 20,
+        fontFamily: 'Montserrat',
+        textAlign: 'center' 
+    },
+    infoText2048: {
+        color: '#fff',
+        fontSize: 80,
+        fontFamily: 'Leaner',
+        textAlign: 'center' 
+    }
 });

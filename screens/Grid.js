@@ -5,6 +5,19 @@ import * as Font from 'expo-font';
 
 export default class GameClone extends Component {
  
+  static navigationOptions = {
+    title: '',
+    headerStyle: {
+      backgroundColor: '#1e252d',
+      shadowColor: 'transparent',
+    },
+    // headerTitleStyle: {
+    //     color: '#f42a71',
+    //     fontWeight: 'bold',
+    // }, 
+ }
+
+
   constructor(props) {
     super(props);
     this.state = {
@@ -351,8 +364,9 @@ export default class GameClone extends Component {
         style={styles.container}
       >
         <View style={styles.top}>
-            <Text style={styles.topText}> Match And Win </Text>
-            <Text style={styles.score}> SCORE : {this.state.score} </Text>
+            <Text style={styles.score}>SCORE</Text>
+            <Text style={styles.scoreCount}>{this.state.score}</Text>
+            {/* <Text style={styles.score}>Join the numbers and get to the 2048 tile!</Text> */}
         </View>
         <View style={styles.middle}>
           <View style={styles.box}>
@@ -382,20 +396,21 @@ const styles = StyleSheet.create({
     alignItems : "center"
   },
   middle : {
-    flex : 6,
-    backgroundColor : "#2F363F"
+    flex : 5,
+    backgroundColor : "#2F363F",
+    margin: 15
+  },
+  bottom : {
+    flex : 3,
+    alignItems : "center",
+    justifyContent : "center",
+    flexDirection : "row"
   },
   box : {
     flex : 1,
     flexDirection : "column",
     backgroundColor : "#1e252d",
     // margin: 2                ///border outside tiles box
-  },
-  bottom : {
-    flex : 2,
-    alignItems : "center",
-    justifyContent : "center",
-    flexDirection : "row"
   },
   row : {
     flex : 1,
@@ -405,12 +420,20 @@ const styles = StyleSheet.create({
     flex : 1,
     alignItems : "center",
     justifyContent : "center",
-    borderRadius : 15,
-    // width: 90,
-    // height: 90,
-    // borderRadius: 100 / 2,
-    margin : 2
+    borderRadius : 10,
+    margin : 2,
+    borderWidth: 1,
   },
+  // eachBox : {
+  //   flex : 1,
+  //   alignItems : "center",
+  //   justifyContent : "center",
+  //   width: 85,
+  //   height: 85,
+  //   borderRadius: 85 / 2,
+  //   margin : 1,
+  //   borderWidth: 1,
+  // },
   boxText : {
     fontSize : 30,
     color : "#0c0309",
@@ -421,11 +444,16 @@ const styles = StyleSheet.create({
     color : "#EAF0F1",
   },
   score : {
-    fontSize : 20,
+    fontSize : 25,
     fontFamily : "Montserrat",
-    position : "absolute",
-    right : 20,
-    top : 120,
+    // position : "absolute",
+    // right : 20,
+    // top : 120,
+    color : "#f42a71",
+  },
+  scoreCount: {
+    fontSize : 40,
+    fontFamily : "Leaner",
     color : "#f42a71",
   }
 })
