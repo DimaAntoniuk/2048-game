@@ -15,7 +15,7 @@ export default class Challenges extends Component {
                 onPress={() => {navigation.goBack()}}
             >
                 <Image
-                    style={{width: 35, height: 35, marginLeft: 10}}
+                    style={{width: 27, height: 27, marginLeft: 15, marginTop: 5}}
                     source={require('../assets/hamburger.png')}
                 />  
             </TouchableOpacity>
@@ -128,6 +128,7 @@ export default class Challenges extends Component {
                     data={this.state.gameModes}
                     renderItem={this.renderButton}
                     keyExtractor={(item, index) => index.toString()}
+                    style={styles.scrollChal}
                 />
             </View>
         );
@@ -139,6 +140,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#1e252d',
         justifyContent: 'center'
+    },
+    scrollChal: {
+        marginTop: 30,
     },
     welcome: {
         flex: 1.5,
@@ -161,6 +165,7 @@ const styles = StyleSheet.create({
         justifyContent : "center",
         // flexDirection: 'row',
         alignItems : 'center',
+        // paddingTop: 5
     },
     bottom:{
         flex: 5,
@@ -201,15 +206,15 @@ const styles = StyleSheet.create({
         margin: 15
     },
     chalBtn: {
-        width: "40%",
-        backgroundColor: "#f42a71",
+        width: "92%",
+        backgroundColor: "#d23be1",
         borderRadius: 5,
         height: 45,
         alignItems: "center",
         justifyContent: "center",
         // marginTop: 10,
         // marginBottom: 10,
-        margin: 15
+        margin: 7
     },
     btnText: {
         fontSize: 14,
