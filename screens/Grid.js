@@ -24,7 +24,6 @@ export default class GameClone extends Component {
       loading : true,
       backgroundColors : ["#616C6F", "#3a4ae7","#5343e6", "#7442dd","#9942db", "#b93ee3","#d23be1", "#e237d1","#ec36ba", "#f433a0",
       "#f73087","#ff2f79","#487EB0"],
-      gameOver : false,
       numRows : 4,
       score : 0,
       fontLoaded : false,
@@ -40,13 +39,6 @@ export default class GameClone extends Component {
       }
       i++;
     } )
-    if(indexes.length == 0){
-      this.setState({ gameOver : true })
-      Alert.alert(
-        'Game Over!!!',
-        `Your score is ${this.state.score} `
-      )
-    }
     var randomIndex = Math.floor(Math.random() * indexes.length)
     randomIndex = indexes[randomIndex]
     return randomIndex
@@ -54,7 +46,8 @@ export default class GameClone extends Component {
 
   componentDidMount(){
     var values = [null]
-    for(var i = 1; i <= 16 ; i++){
+    var numRow = this.state.numRows;
+    for(var i = 1; i <= numRow*numRow ; i++){
       values[i] = null;
     }
     var randomIndex = this.returnIndexForNew(values)
@@ -75,6 +68,60 @@ export default class GameClone extends Component {
       'SFProDisplay' : require("../assets/fonts/SFProDisplay-Regular.ttf"),
     })
     this.setState({ fontLoaded : true })
+  }
+
+  isGameOver = () => {
+    var values = this.state.positionValues;
+    var numRow = this.state.numRows;
+    var gameOver = true;
+    var abort = false;
+    for(var rowNumber = 0; rowNumber < numRow && !abort; rowNumber++){
+      
+      for(var boxNumber = 1; boxNumber <= numRow && !abort; boxNumber++){
+        if (values[rowNumber * numRow + boxNumber] == null){
+          gameOver = false;
+          abort = true;
+          break;
+        }
+
+        if (rowNumber > 0 && values[rowNumber * numRow + boxNumber] == values[(rowNumber - 1) * numRow + boxNumber]) {
+          gameOver = false;
+          abort = true;
+          break;
+        }
+
+        if (rowNumber < (numRow - 1) && values[rowNumber * numRow + boxNumber] == values[(rowNumber + 1) * numRow + boxNumber]) {
+          gameOver = false;
+          abort = true;
+          break;
+        }
+
+        if (boxNumber > 1 && values[rowNumber * numRow + boxNumber] == values[rowNumber * numRow + (boxNumber - 1)]) {
+          gameOver = false;
+          abort = true;
+          break;
+        }
+
+        if (boxNumber < numRow && values[rowNumber * numRow + boxNumber] == values[rowNumber * numRow + (boxNumber + 1)]) {
+          gameOver = false;
+          abort = true;
+          break;
+        }
+      }
+    }
+    return gameOver;
+  }
+
+  gameOver = () => {
+    Alert.alert(
+      'Game Over!!!',
+      `Your score is ${this.state.score}`,
+      [
+        {text: 'Restart game', onPress: () => {this.setState({loading:true}); this.componentDidMount();}},
+        {text: 'Go to menu', onPress: () => {this.props.navigation.navigate('MainMenu')}},
+      ],
+      {cancelable: false}
+    )
   }
 
   checkLeftSwipe = () => {
@@ -104,7 +151,7 @@ export default class GameClone extends Component {
               values[check+1] = values[currentPositionNumber]
               values[currentPositionNumber] = null
             }
-          }else{ // we need to +1
+          }else{
             if( check + 1 != currentPositionNumber ){
               values[check+1] = values[currentPositionNumber]
               values[currentPositionNumber] = null
@@ -116,6 +163,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values, score })
+
+    if (this.isGameOver()) {
+      this.gameOver();
+    }
   }
 
   checkRightSwipe = () => {
@@ -136,19 +187,19 @@ export default class GameClone extends Component {
               break;
             }
           }
-          if(valueFoundBeforeTermination){ //if loop stopped for which value of check
+          if(valueFoundBeforeTermination){
             if( values[check] == values[currentPositionNumber] && !newlyMerged.includes(check) ){
               values[check] *= 2
               values[currentPositionNumber] = null
               score += values[check]
               newlyMerged.push(check)
-            }else{ //if values are not equal -> just make currentPosition to check-1
+            }else{
                 if(check-1 != currentPositionNumber){
                   values[check-1] = values[currentPositionNumber]
                   values[currentPositionNumber] = null 
                 }
             }
-          }else{ // loop terminates -> then check will be pointing to what -> pointing to 1 more so -> make it to check - 1
+          }else{
             values[check-1] = values[currentPositionNumber]
             values[currentPositionNumber] = null
           }
@@ -158,6 +209,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values ,score })
+
+    if (this.isGameOver()) {
+      this.gameOver();
+    }
   }
 
   checkUpSwipe = () => {
@@ -170,7 +225,6 @@ export default class GameClone extends Component {
     for(var rowNumber = 1 ; rowNumber < numRow ; rowNumber++){
       for(var boxNumber = 1 ; boxNumber <= numRow ; boxNumber++){
         currentPositionNumber = rowNumber * numRow + boxNumber
-        //for value of check -> we need same boxNumber but for different rows
         if(values[currentPositionNumber] != null){
           valueFoundBeforeTermination = false
           for(check = rowNumber - 1 ; check >= 0 ; check-- ){
@@ -180,7 +234,7 @@ export default class GameClone extends Component {
               break;
             }
           }
-          if(valueFoundBeforeTermination){ // loop has been stopped before completion 
+          if(valueFoundBeforeTermination){
             var pos2 = check * numRow + boxNumber
             if( values[pos2] == values[currentPositionNumber] && !newlyMerged.includes(pos2) ){
               values[pos2] *= 2;
@@ -191,7 +245,7 @@ export default class GameClone extends Component {
               values[pos2+numRow] = values[currentPositionNumber]
               values[currentPositionNumber] = null
             }
-          }else{ //loop completes itself -> need to add 1 to get correctPosition
+          }else{
             var pos2 = ( check + 1 ) * numRow + boxNumber
             if(pos2 != currentPositionNumber){
               values[pos2] = values[currentPositionNumber]
@@ -204,6 +258,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values , score })
+
+    if (this.isGameOver()) {
+      this.gameOver();
+    }
   }
 
   checkDownSwipe = () => {
@@ -216,7 +274,6 @@ export default class GameClone extends Component {
     for(var rowNumber = numRow - 2 ; rowNumber >= 0 ; rowNumber--){
       for(var boxNumber = 1 ; boxNumber <= numRow ; boxNumber++){
         currentPositionNumber = rowNumber * numRow + boxNumber
-        //for value of check -> we need same boxNumber but for different rows
         if(values[currentPositionNumber] != null){  
           valueFoundBeforeTermination = false
           for( check = rowNumber + 1 ; check < numRow ; check++ ){
@@ -250,6 +307,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values , score })
+
+    if (this.isGameOver()) {
+      this.gameOver();
+    }
   }
 
   returnRow = rowNumber => {
@@ -302,21 +363,21 @@ export default class GameClone extends Component {
         onSwipeRight={this.checkRightSwipe}
         style={styles.container}
       >
-          <View style={styles.top}>
-              <Text style={styles.score}>SCORE</Text>
-              <Text style={styles.scoreCount}>{this.state.score}</Text>
-              {/* <Text style={styles.score}>Join the numbers and get to the 2048 tile!</Text> */}
+        <View style={styles.top}>
+            <Text style={styles.score}>SCORE</Text>
+            <Text style={styles.scoreCount}>{this.state.score}</Text>
+            {/* <Text style={styles.score}>Join the numbers and get to the 2048 tile!</Text> */}
+        </View>
+        <View style={styles.middle}>
+          <View style={styles.box}>
+            {this.returnRow(0)}
+            {this.returnRow(1)}
+            {this.returnRow(2)}
+            {this.returnRow(3)}
           </View>
-          <View style={styles.middle}>
-            <View style={styles.box}>
-              {this.returnRow(0)}
-              {this.returnRow(1)}
-              {this.returnRow(2)}
-              {this.returnRow(3)}
-            </View>
-          </View>
-          <View style={styles.bottom}>
-          </View>
+        </View>
+        <View style={styles.bottom}>
+        </View>
       </GestureRecognizer>
     );
   }
