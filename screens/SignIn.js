@@ -1,6 +1,18 @@
 import React from 'react'
-import {StyleSheet, View, TextInput, Text, Alert, Pressable } from 'react-native'
+import {StyleSheet, View, TextInput, Text, Alert, Pressable, ActivityIndicator} from 'react-native'
 import firebase from '../api/firebase/firebase'
+import * as Font from 'expo-font';
+
+
+let customFonts = {
+    'Cassanet': require('../assets/fonts/cassannet_plus_regular.ttf'),
+    'Mont-Bold' : require("../assets/fonts/Montserrat-Bold.ttf"),
+    'Montserrat' : require("../assets/fonts/Montserrat-Medium.ttf"),
+    'Robinson' : require("../assets/fonts/Robinson-Regular.otf"),
+    'numb3rs' : require("../assets/fonts/numbrs-regular-webfont.ttf"),
+    'Leaner' : require("../assets/fonts/Leaner-Thin.ttf"),
+    'RobOut' : require("../assets/fonts/Robinson-Outline.otf"),
+  };
 
 
 export default class SignIn extends React.Component {
@@ -9,7 +21,17 @@ export default class SignIn extends React.Component {
         password: '',
         emailError: '',
         passwordError: '',
+        fontsLoaded: false,
     };
+    
+    _loadFontsAsync = async () => {
+        await Font.loadAsync(customFonts);
+        this.setState({ fontsLoaded: true });
+    }
+    
+    componentDidMount() {
+        this._loadFontsAsync();
+    }
 
     emailHandler = email => {
         this.setState({email})
@@ -114,14 +136,27 @@ export default class SignIn extends React.Component {
     goToSignup = () => this.props.navigation.navigate('SignUp');
 
     render() {
-        return (
+        if(!this.state.fontsLoaded){
+            return(
+              <View style={styles.container}>
+                <ActivityIndicator />
+              </View>
+            )
+          }
+
+        return (   
             <View style={styles.container}>
+                <View style={styles.top}>
+                    <Text style={styles.topText}>2048</Text>
+                </View>
+                <View style={styles.bottom}>
                     <TextInput
                     style={styles.inputView}
+                        keyboardAppearance='dark'
                         name='email'
                         value={this.state.email}
                         placeholder='email...'
-                        placeholderTextColor="#D3D3D3"
+                        placeholderTextColor="#7d7d7d"
                         autoCapitalize='none'
                         onChangeText={this.emailHandler}
                         onBlur={() => this.emailValidation()}
@@ -131,26 +166,28 @@ export default class SignIn extends React.Component {
                         {this.state.emailError ? 'wrong input' : ''}
                     </Text>
                     <TextInput
+                        keyboardAppearance='dark'
                         style={styles.inputView}
                         name='password'
                         value={this.state.password}
                         placeholder='password...'
-                        placeholderTextColor="#D3D3D3"
+                        placeholderTextColor="#7d7d7d"
                         secureTextEntry
                         onChangeText={this.passwordHandler}
-                        onBlur={() => this.passwordValidation()}
+                        osnBlur={() => this.passwordValidation()}
                     />
                     <Text
                         style={styles.error}>
                         {this.state.passwordError ? 'wrong input' : ''}
                     </Text>
                 <Pressable style={styles.signInBtn} onPress={this.onLogin}>
-                    <Text>SIGN IN</Text>
+                    <Text style={styles.signInText}>SIGN IN</Text>
                 </Pressable>
                 <Pressable style={styles.signUpBtn} onPress={this.goToSignup}>
-                    <Text>sign up</Text>
+                    <Text style={styles.signUpText}>sign up</Text>
                 </Pressable>
             </View>
+        </View>
         )
     }
 }
@@ -158,23 +195,42 @@ export default class SignIn extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#7395AE',
-        alignItems: 'center',
-        justifyContent: 'center'
+        backgroundColor: '#1e252d',
+        flexDirection : "column",
+    },
+    top : {
+        flex : 3,
+        justifyContent : "center",
+        alignItems : "center",
+      },
+    bottom : {
+        flex : 3,
+        alignItems : "center"
+    },
+    topText: {
+        fontSize: 150,
+        // fontFamily: 'Cassanet',
+        // fontFamily: 'Superstar-M54',
+        fontFamily: 'Leaner',
+        // fontFamily: 'Robinson',
+        // fontFamily: 'RobOut',
+        // fontFamily: 'numb3rs',
+        color: "#f42a71"
     },
     inputView: {
         width: "80%",
-        backgroundColor: "#557A95",
+        backgroundColor: "#1a1f26",
         borderRadius: 5,
         height: 50,
-        marginBottom: 10,
+        marginBottom: 5,
         justifyContent: "center",
         padding: 15,
-        color: '#fff'
+        color: '#fff',
+        fontFamily: 'Montserrat'
     },
     signInBtn: {
         width: "80%",
-        backgroundColor: "#E5989B",
+        backgroundColor: "#f42a71",
         borderRadius: 5,
         height: 50,
         alignItems: "center",
@@ -190,8 +246,15 @@ const styles = StyleSheet.create({
         marginTop: 0,
         marginBottom: 10,
     },
+    signInText: {
+        fontFamily: 'Montserrat'
+    },
+    signUpText: {
+        color: '#f42a71',
+        fontFamily: 'Montserrat'
+    },
     error: {
-        color: "#e83810",
+        color: "red",
         marginBottom: 10,
     },
 });

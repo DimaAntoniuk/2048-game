@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Font from 'expo-font';
 import {db, firebase} from '../api/firebase/firebase'
@@ -7,15 +7,37 @@ import {db, firebase} from '../api/firebase/firebase'
 
 export default class GameClone extends Component {
  
+  static navigationOptions = ({navigation}) => ({
+    title: '',
+    gestureEnabled: false,
+    headerStyle: {
+      backgroundColor: '#1e252d',
+      shadowColor: 'transparent',
+    },
+    headerLeft: () => (
+        <TouchableOpacity
+            onPress={() => {navigation.goBack()}}
+        >
+            <Image
+                style={{width: 35, height: 35, marginLeft: 10}}
+                source={require('../assets/hamburger.png')}
+            />  
+        </TouchableOpacity>
+        
+    ),
+  })
+
+
   constructor(props) {
     super(props);
     this.state = {
       loading : true,
       backgroundColors : ["#616C6F", "#3a4ae7","#5343e6", "#7442dd","#9942db", "#b93ee3","#d23be1", "#e237d1","#ec36ba", "#f433a0",
-      "#f73087","#ff2f79","#487EB0"],
-      numRows : 4,
+      "#f73087","#ff2f79","#ff005b"],
       score : 0,
       fontLoaded : false,
+      gameOver: false,
+      ...this.props.navigation.state.params
     };
   }
 
@@ -39,39 +61,65 @@ export default class GameClone extends Component {
     for(var i = 1; i <= numRow*numRow ; i++){
       values[i] = null;
     }
-    var uid = this.props.navigation.state.params.uid
-    db.collection('flex-users').doc(uid.toString()).get()
-      .then(doc => {
-        const data = doc.data();
-        console.log(data)
-        if (data && !data.get('gameEnd', true)) {
-          this.setState({ 
-            positionValues : data['grid'],
-            loading : false, 
-            score : data['score'],
-          })
-        } else {
-          var randomIndex = this.returnIndexForNew(values)
-          values[randomIndex] = 2
-          this.setState({ 
-            positionValues : values,
-            loading : false, 
-            score : 0,
-          })
-        }
+
+    if (this.state.gameMode == 'classic') {
+      var uid = this.props.navigation.state.params.uid
+      db.collection('flex-users').doc(uid.toString()).get()
+        .then(doc => {
+          const data = doc.data();
+          console.log(data)
+          if (data && !data.get('gameEnd', true)) {
+            this.setState({ 
+              positionValues : data['grid'],
+              loading : false, 
+              score : data['score'],
+            })
+          } else {
+            var randomIndex = this.returnIndexForNew(values)
+            values[randomIndex] = 2
+            this.setState({ 
+              positionValues : values,
+              loading : false, 
+              score : 0,
+            })
+          }
+        })
+        .catch(err => {
+          console.log('Error getting documents', err);
+        });
+    } else {
+      var randomIndex = this.returnIndexForNew(values)
+      values[randomIndex] = this.state.gameMode == '15 puzzle' ? 0 : this.state.step
+      this.setState({ 
+        positionValues : values,
+        loading : false, 
+        score : 0,
+        gameOver: false,
+        ...this.props.navigation.state.params
       })
-      .catch(err => {
-        console.log('Error getting documents', err);
-      });
+    }
+
     this.loadFonts()
+
+    if (this.state.gameMode == 'timer') {
+      var timer = setInterval(() => {
+        if (this.state.time == 0) {
+          this.gameOver();
+        }
+        if (this.state.gameOver) {
+          clearInterval(timer);
+        }
+        if (this.state.time > 0 && !this.state.gameOver) {
+          this.setState(prevState => ({time:(prevState.time-1)}))
+        }
+      }, 1000);
+    }
   }
 
   loadFonts = async() => {
     await Font.loadAsync({
       'Mont-Bold' : require("../assets/fonts/Montserrat-Bold.ttf"),
       'Montserrat' : require("../assets/fonts/Montserrat-Medium.ttf"),
-      'Roboto' : require("../assets/fonts/Roboto-Regular.ttf"),
-      'SFProDisplay' : require("../assets/fonts/SFProDisplay-Regular.ttf"),
     })
     this.setState({ fontLoaded : true })
   }
@@ -144,6 +192,9 @@ export default class GameClone extends Component {
 
   gameOver = () => {
     this.saveToFirestore(true, this.state.positionValues, this.state.score)
+    this.setState({
+      gameOver: true,
+    })
     Alert.alert(
       'Game Over!!!',
       `Your score is ${this.state.score}`,
@@ -174,7 +225,7 @@ export default class GameClone extends Component {
           }
           if(valueFoundBeforeTermination){
             if( values[check] == values[currentPositionNumber] && !newlyMerged.includes(check) ){
-              values[check] *= 2
+              values[check] = this.state.gameMode == 'sum sequence' ? values[check] + this.state.step : values[check] * this.state.step
               values[currentPositionNumber] = null
               score += values[check]
               newlyMerged.push(check)
@@ -192,9 +243,21 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values, score })
-    this.saveToFirestore(false, values, this.state.score)
+    
+    if (this.state.gameMode == 'classic') {
+     this.saveToFirestore(false, values, this.state.score)
+    }
+
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -220,7 +283,7 @@ export default class GameClone extends Component {
           }
           if(valueFoundBeforeTermination){
             if( values[check] == values[currentPositionNumber] && !newlyMerged.includes(check) ){
-              values[check] *= 2
+              values[check] = this.state.gameMode == 'sum sequence' ? values[check] + this.state.step : values[check] * this.state.step
               values[currentPositionNumber] = null
               score += values[check]
               newlyMerged.push(check)
@@ -238,9 +301,21 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values ,score })
-    this.saveToFirestore(false, values, this.state.score)
+    
+    if (this.state.gameMode == 'classic') {
+     this.saveToFirestore(false, values, this.state.score)
+    }
+
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -268,7 +343,7 @@ export default class GameClone extends Component {
           if(valueFoundBeforeTermination){
             var pos2 = check * numRow + boxNumber
             if( values[pos2] == values[currentPositionNumber] && !newlyMerged.includes(pos2) ){
-              values[pos2] *= 2;
+              values[pos2] = this.state.gameMode == 'sum sequence' ? values[pos2] + this.state.step : values[pos2] * this.state.step
               values[currentPositionNumber] = null
               score += values[pos2]
               newlyMerged.push(pos2)
@@ -287,9 +362,18 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
     this.saveToFirestore(false, values, this.state.score)
+
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -317,7 +401,7 @@ export default class GameClone extends Component {
           if(valueFoundBeforeTermination){
             var pos2 = check * numRow + boxNumber
             if( values[pos2] == values[currentPositionNumber] && !newlyMerged.includes(pos2) ){
-              values[pos2] *= 2
+              values[pos2] = this.state.gameMode == 'sum sequence' ? values[pos2] + this.state.step : values[pos2] * this.state.step
               values[currentPositionNumber] = null
               score += values[pos2]
               newlyMerged.push(pos2)
@@ -336,9 +420,21 @@ export default class GameClone extends Component {
       }
     }
     var randomIndex = this.returnIndexForNew(values)
-    values[randomIndex] = 2
+    values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
-    this.saveToFirestore(false, values, this.state.score)
+    
+    if (this.state.gameMode == 'classic') {
+     this.saveToFirestore(false, values, this.state.score)
+    }
+
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -352,28 +448,26 @@ export default class GameClone extends Component {
     for(var i = 1 ; i <= numRow ; i++){
       values.push({
         value :  val[ rowNumber * numRow + i ],
-        exponent : Math.log(val[ rowNumber * numRow + i ])/Math.log(2)
+        exponent : val[ rowNumber * numRow + i ] == 0 || this.state.gameMode == 'sum sequence' ? val[ rowNumber * numRow + i ] : Math.log(val[ rowNumber * numRow + i ])/Math.log(2)
       })
     }
     return(
-      <View style={styles.row}>
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[0].exponent] }]}>
-          <Text style={styles.boxText}> { values[0].value } </Text>      
-        </View>
-
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[1].exponent] }]}>
-          <Text style={styles.boxText}> { values[1].value } </Text>
-        </View>
-
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[2].exponent] }]}>
-          <Text style={styles.boxText}> { values[2].value } </Text>       
-        </View>
-        
-        <View style={[styles.eachBox,{ backgroundColor : Colors[values[3].exponent] }]}>
-          <Text style={styles.boxText}> { values[3].value } </Text>
-        </View>
+      <View key={rowNumber} style={styles.row}>
+        {
+          values.map((item, key) => (
+            <View key={rowNumber*numRow+key} style={[styles.eachBox,{ backgroundColor : Colors[item.exponent] }]}>
+              <Text style={styles.boxText}> { item.value } </Text>      
+            </View>
+          ))
+        }
       </View>
     )
+  }
+
+  getTimerTime = () => {
+    var minutes = this.state.time / 60 | 0
+    var seconds = this.state.time % 60
+    return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds
   }
 
   render() {
@@ -388,22 +482,25 @@ export default class GameClone extends Component {
 
     return (
       <GestureRecognizer
-        onSwipeUp={this.checkUpSwipe}
-        onSwipeDown={this.checkDownSwipe}
-        onSwipeLeft={this.checkLeftSwipe}
-        onSwipeRight={this.checkRightSwipe}
+        onSwipeUp={this.state.gameMode == 'inverted' ? this.checkDownSwipe : this.checkUpSwipe}
+        onSwipeDown={this.state.gameMode == 'inverted' ? this.checkUpSwipe : this.checkDownSwipe}
+        onSwipeLeft={this.state.gameMode == 'inverted' ? this.checkRightSwipe : this.checkLeftSwipe}
+        onSwipeRight={this.state.gameMode == 'inverted' ? this.checkLeftSwipe : this.checkRightSwipe}
         style={styles.container}
       >
         <View style={styles.top}>
-            <Text style={styles.topText}> Match And Win </Text>
-            <Text style={styles.score}> SCORE : {this.state.score} </Text>
+            <Text style={styles.score}>SCORE</Text>
+            <Text style={styles.scoreCount}>{this.state.score}</Text>
+            {this.state.gameMode == 'timer' ? <Text style={styles.score}>{this.getTimerTime()}</Text> : <></>}
+            {this.state.gameMode == 'turns' ? <Text style={styles.score}>{this.state.turns}</Text> : <></>}
         </View>
         <View style={styles.middle}>
           <View style={styles.box}>
-            {this.returnRow(0)}
-            {this.returnRow(1)}
-            {this.returnRow(2)}
-            {this.returnRow(3)}
+            {
+              [...Array(this.state.numRows).keys()].map((item, key) => (
+                this.returnRow(item)
+              ))
+            }
           </View>
         </View>
         <View style={styles.bottom}>
@@ -426,20 +523,21 @@ const styles = StyleSheet.create({
     alignItems : "center"
   },
   middle : {
-    flex : 6,
-    backgroundColor : "#2F363F"
+    flex : 5,
+    backgroundColor : "#2F363F",
+    margin: 15
+  },
+  bottom : {
+    flex : 3,
+    alignItems : "center",
+    justifyContent : "center",
+    flexDirection : "row"
   },
   box : {
     flex : 1,
     flexDirection : "column",
     backgroundColor : "#1e252d",
     // margin: 2                ///border outside tiles box
-  },
-  bottom : {
-    flex : 2,
-    alignItems : "center",
-    justifyContent : "center",
-    flexDirection : "row"
   },
   row : {
     flex : 1,
@@ -449,12 +547,20 @@ const styles = StyleSheet.create({
     flex : 1,
     alignItems : "center",
     justifyContent : "center",
-    borderRadius : 15,
-    // width: 90,
-    // height: 90,
-    // borderRadius: 100 / 2,
-    margin : 2
+    borderRadius : 10,
+    margin : 2,
+    borderWidth: 1,
   },
+  // eachBox : {
+  //   flex : 1,
+  //   alignItems : "center",
+  //   justifyContent : "center",
+  //   width: 85,
+  //   height: 85,
+  //   borderRadius: 85 / 2,
+  //   margin : 1,
+  //   borderWidth: 1,
+  // },
   boxText : {
     fontSize : 30,
     color : "#0c0309",
@@ -465,11 +571,13 @@ const styles = StyleSheet.create({
     color : "#EAF0F1",
   },
   score : {
-    fontSize : 20,
+    fontSize : 25,
     fontFamily : "Montserrat",
-    position : "absolute",
-    right : 20,
-    top : 120,
+    color : "#f42a71",
+  },
+  scoreCount: {
+    fontSize : 40,
+    fontFamily : "Leaner",
     color : "#f42a71",
   }
 })
