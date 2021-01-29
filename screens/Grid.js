@@ -61,35 +61,41 @@ export default class GameClone extends Component {
     var values = this.state.positionValues;
     var numRow = this.state.numRows;
     var gameOver = true;
-    for(var rowNumber = 0; rowNumber < numRow; rowNumber++){
-      for(var boxNumber = 1; boxNumber <= numRow; boxNumber++){
+    var abort = false;
+    for(var rowNumber = 0; rowNumber < numRow && !abort; rowNumber++){
+      
+      for(var boxNumber = 1; boxNumber <= numRow && !abort; boxNumber++){
         if (values[rowNumber * numRow + boxNumber] == null){
           gameOver = false;
+          abort = true;
           break;
         }
 
         if (rowNumber > 0 && values[rowNumber * numRow + boxNumber] == values[(rowNumber - 1) * numRow + boxNumber]) {
           gameOver = false;
+          abort = true;
           break;
         }
 
-        if (rowNumber < numRow && values[rowNumber * numRow + boxNumber] == values[(rowNumber + 1) * numRow + boxNumber]) {
+        if (rowNumber < (numRow - 1) && values[rowNumber * numRow + boxNumber] == values[(rowNumber + 1) * numRow + boxNumber]) {
           gameOver = false;
+          abort = true;
           break;
         }
 
-        if (boxNumber > 0 && values[rowNumber * numRow + boxNumber] == values[rowNumber * numRow + (boxNumber - 1)]) {
+        if (boxNumber > 1 && values[rowNumber * numRow + boxNumber] == values[rowNumber * numRow + (boxNumber - 1)]) {
           gameOver = false;
+          abort = true;
           break;
         }
 
         if (boxNumber < numRow && values[rowNumber * numRow + boxNumber] == values[rowNumber * numRow + (boxNumber + 1)]) {
           gameOver = false;
+          abort = true;
           break;
         }
       }
     }
-    console.log(gameOver);
     return gameOver;
   }
 
