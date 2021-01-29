@@ -48,6 +48,10 @@ export default class MainMenu extends Component {
         this.props.navigation.navigate('Challenges')
     }
 
+    howToPlay = () => {
+        this.props.navigation.navigate('HowToPlay')
+    }
+
     render() {
         this.state = {
             displayName: firebase.auth().currentUser.displayName,
@@ -65,7 +69,7 @@ export default class MainMenu extends Component {
                     <Text style={styles.infoText}>This is </Text><Text style={styles.infoText2048}>2048</Text>
                 </View>
                 <View style={styles.btnsContainer}>
-                    <Pressable style={styles.btnsHelp} > 
+                    <Pressable style={styles.btnsHelp} onPress={this.howToPlay}> 
                         <Text style={styles.btnText}>How to Play</Text>
                     </Pressable>
                     <Pressable style={styles.btnsHelp} >
