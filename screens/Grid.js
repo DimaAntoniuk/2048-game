@@ -1,17 +1,29 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Font from 'expo-font';
 
 export default class GameClone extends Component {
  
-  static navigationOptions = {
+  static navigationOptions = ({navigation}) => ({
     title: '',
+    gestureEnabled: false,
     headerStyle: {
       backgroundColor: '#1e252d',
       shadowColor: 'transparent',
     },
- }
+    headerLeft: () => (
+        <TouchableOpacity
+            onPress={() => {navigation.goBack()}}
+        >
+            <Image
+                style={{width: 35, height: 35, marginLeft: 10}}
+                source={require('../assets/hamburger.png')}
+            />  
+        </TouchableOpacity>
+        
+    ),
+  })
 
 
   constructor(props) {
@@ -20,9 +32,10 @@ export default class GameClone extends Component {
       loading : true,
       backgroundColors : ["#616C6F", "#3a4ae7","#5343e6", "#7442dd","#9942db", "#b93ee3","#d23be1", "#e237d1","#ec36ba", "#f433a0",
       "#f73087","#ff2f79","#ff005b"],
-      numRows : 4,
       score : 0,
       fontLoaded : false,
+      gameOver: false,
+      ...this.props.navigation.state.params
     };
   }
 
@@ -52,8 +65,24 @@ export default class GameClone extends Component {
       positionValues : values,
       loading : false, 
       score : 0,
+      gameOver: false,
+      ...this.props.navigation.state.params
     })
     this.loadFonts()
+
+    if (this.state.gameMode == 'timer') {
+      var timer = setInterval(() => {
+        if (this.state.time == 0) {
+          this.gameOver();
+        }
+        if (this.state.gameOver) {
+          clearInterval(timer);
+        }
+        if (this.state.time > 0 && !this.state.gameOver) {
+          this.setState(prevState => ({time:(prevState.time-1)}))
+        }
+      }, 1000);
+    }
   }
 
   loadFonts = async() => {
@@ -107,6 +136,9 @@ export default class GameClone extends Component {
   }
 
   gameOver = () => {
+    this.setState({
+      gameOver: true,
+    })
     Alert.alert(
       'Game Over!!!',
       `Your score is ${this.state.score}`,
@@ -158,6 +190,14 @@ export default class GameClone extends Component {
     values[randomIndex] = 2
     this.setState({ positionValues : values, score })
 
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -203,6 +243,14 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ positionValues : values ,score })
+
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
 
     if (this.isGameOver()) {
       this.gameOver();
@@ -253,6 +301,14 @@ export default class GameClone extends Component {
     values[randomIndex] = 2
     this.setState({ positionValues : values , score })
 
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -302,6 +358,14 @@ export default class GameClone extends Component {
     values[randomIndex] = 2
     this.setState({ positionValues : values , score })
 
+    if (this.state.gameMode == 'turns') {
+      var newTurns = this.state.turns - 1 + newlyMerged.length
+      if (newTurns == 0) {
+        this.gameOver();
+      }
+      this.setState({turns:newTurns})
+    }
+
     if (this.isGameOver()) {
       this.gameOver();
     }
@@ -319,16 +383,22 @@ export default class GameClone extends Component {
       })
     }
     return(
-      <View style={styles.row}>
+      <View key={rowNumber} style={styles.row}>
         {
           values.map((item, key) => (
-            <View key={key} style={[styles.eachBox,{ backgroundColor : Colors[item.exponent] }]}>
+            <View key={rowNumber*numRow+key} style={[styles.eachBox,{ backgroundColor : Colors[item.exponent] }]}>
               <Text style={styles.boxText}> { item.value } </Text>      
             </View>
           ))
         }
       </View>
     )
+  }
+
+  getTimerTime = () => {
+    var minutes = this.state.time / 60 | 0
+    var seconds = this.state.time % 60
+    return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds
   }
 
   render() {
@@ -352,6 +422,8 @@ export default class GameClone extends Component {
         <View style={styles.top}>
             <Text style={styles.score}>SCORE</Text>
             <Text style={styles.scoreCount}>{this.state.score}</Text>
+            {this.state.gameMode == 'timer' ? <Text style={styles.score}>{this.getTimerTime()}</Text> : <></>}
+            {this.state.gameMode == 'turns' ? <Text style={styles.score}>{this.state.turns}</Text> : <></>}
         </View>
         <View style={styles.middle}>
           <View style={styles.box}>

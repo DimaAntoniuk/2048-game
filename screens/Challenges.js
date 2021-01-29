@@ -1,85 +1,83 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Pressable, TouchableOpacity, Image } from 'react-native';
-import firebase from '../api/firebase/firebase'
+import { StyleSheet, View, Text, Pressable, FlatList, TouchableOpacity, Image } from 'react-native';
 
 
-export default class MainMenu extends Component {
-    state = {
-        uid: '',
-        displayName: ''
-    };
-
+export default class Challenges extends Component {
     static navigationOptions = ({navigation}) => ({
         title: '',
-        gestureEnabled: false,
         headerStyle: {
             backgroundColor: '#1e252d',
             shadowColor: 'transparent',
         },
+        gestureEnabled: false,
         headerLeft: () => (
             <TouchableOpacity
-                onPress={() => {navigation.navigate('Auth')}}
+                onPress={() => {navigation.goBack()}}
             >
                 <Image
-                    style={{width: 27, height: 27, marginLeft: 15, marginTop: 5}}
-                    source={require('../assets/logout2-left.png')}
+                    style={{width: 35, height: 35, marginLeft: 10}}
+                    source={require('../assets/hamburger.png')}
                 />  
             </TouchableOpacity>
+            
         ),
     })
 
-    signOut = () => {
-        firebase.auth().signOut().then(() => {
-            this.props.navigation.navigate('SignIn')
-        })
-            .catch(error => this.setState({ errorMessage: error.message }))
-    };
-
-    startGame = () => {
-        this.props.navigation.navigate('Grid', {
-            numRows: 4,
-            gameMode: 'classic',
-        })
+    constructor(props) {
+        super(props);
+        this.state = {
+            gameModes: [
+                {
+                    numRows: 3,
+                    gameMode: 'timer',
+                    time: 90,
+                },
+                {
+                    numRows: 3,
+                    gameMode: 'turns',
+                    turns: 10,
+                },
+                {
+                    numRows: 4,
+                    gameMode: 'timer',
+                    time: 90,
+                },
+                {
+                    numRows: 4,
+                    gameMode: 'turns',
+                    turns: 10,
+                },
+                {
+                    numRows: 5,
+                    gameMode: 'timer',
+                    time: 90,
+                },
+                {
+                    numRows: 5,
+                    gameMode: 'turns',
+                    turns: 10,
+                },
+            ],
+        };
     }
-
-    handleChallenges = () => {
-        this.props.navigation.navigate('Challenges')
+    renderButton = ({item, index, separators}) => {
+        return (
+            <View style={styles.challengeContainer}>
+                <Pressable style={styles.chalBtn} onPress={() => {this.props.navigation.navigate('Grid', item)}}>
+                    <Text style={styles.chalText}>Challenge {index + 1}</Text>
+                </Pressable>
+            </View>
+        )
     }
 
     render() {
-        this.state = {
-            displayName: firebase.auth().currentUser.displayName,
-            uid: firebase.auth().currentUser.uid
-        };
-
         return (
             <View style={styles.container}>
-                <View style={styles.welcome}>
-                    <Text style = {styles.welcomeText}>
-                        Welcome, {this.state.displayName}
-                    </Text>
-                </View>
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoText}>This is </Text><Text style={styles.infoText2048}>2048</Text>
-                </View>
-                <View style={styles.btnsContainer}>
-                    <Pressable style={styles.btnsHelp} > 
-                        <Text style={styles.btnText}>How to Play</Text>
-                    </Pressable>
-                    <Pressable style={styles.btnsHelp} >
-                        <Text style={styles.btnText}>Leaderboard</Text>
-                    </Pressable>
-                </View>
-                <View style={styles.challengeContainer}>
-                    <Pressable style={styles.chalBtn} onPress={this.handleChallenges}>
-                        <Text style={styles.chalText}>Challenges</Text>
-                    </Pressable>
-                </View>
-                <View style={styles.bottom}>
-                    <Pressable style={styles.playBtn} onPress={this.startGame}>
-                        <Text style={styles.btnTextPlay}>Play</Text>
-                    </Pressable>
-                </View>
+                <FlatList
+                    data={this.state.gameModes}
+                    renderItem={this.renderButton}
+                    keyExtractor={(item, index) => index.toString()}
+                />
             </View>
         );
     }
@@ -89,6 +87,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#1e252d',
+        justifyContent: 'center'
     },
     welcome: {
         flex: 1.5,
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         // marginTop: 10,
         // marginBottom: 10,
-        // margin: 15
+        margin: 15
     },
     btnText: {
         fontSize: 14,
