@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     scrollChal: {
-        marginTop: 30
+        marginTop: 30,
     },
     welcome: {
         flex: 1.5,
