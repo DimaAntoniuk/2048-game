@@ -1,61 +1,22 @@
-import React, {Component, useRef } from 'react';
-import {View, Text,StyleSheet,Alert} from 'react-native';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
-import { AntDesign,FontAwesome } from '@expo/vector-icons';
-import {Animated} from "react-native";
-import * as Font from 'expo-font'
-
-const FadeInView = (props) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
-  React.useEffect(() => {
-    Animated.timing(
-      fadeAnim,
-      {
-        toValue: 1,
-        duration: 500,
-      }
-    ).start();
-  }, [])
-  return (
-    <Animated.View                 // Special animatable View
-      style={{
-        ...props.style,
-        opacity: fadeAnim,  
-        opacity: fadeAnim, // Binds directly
-    transform: [{
-      translateY: fadeAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [100, 0]  // 0 : 150, 0.5 : 75, 1 : 0
-      }),
-    }],       // Bind opacity to animated value
-      }}
-    >
-      {props.children}
-    </Animated.View>
-  );
-}
+import React, { Component } from 'react';
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+import * as Font from 'expo-font';
 
 export default class GameClone extends Component {
  
   constructor(props) {
     super(props);
     this.state = {
-      myText: 'I\'m ready to get swiped!',
-      gestureName: 'none',
       loading : true,
-      backgroundColors : [  "#616C6F", "#74B9FF","#E83350", "#26ae60","#F4C724", "#2475B0","#EA425C", "#B83227","#4BCFFA", "#45CE30",
-      "#F3CC79","#192A56","#487EB0" ],gameOver : false,iconName : "",numRows : 4,
-      fadeValue: new Animated.Value(0),score : 0,fontLoaded : false,
-    
+      backgroundColors : ["#616C6F", "#74B9FF", "#E83350", "#26ae60", "#F4C724", "#2475B0", "#EA425C", 
+      "#B83227", "#4BCFFA", "#45CE30", "#F3CC79","#192A56","#487EB0"],
+      gameOver : false,
+      numRows : 4,
+      score : 0,
+      fontLoaded : false,
     };
   }
-
-  _start = () => {
-    Animated.timing(this.state.fadeValue, {
-      toValue: 1,
-      duration: 1000
-    }).start();
-  };
 
   returnIndexForNew = values => {
     var indexes = []
@@ -72,11 +33,9 @@ export default class GameClone extends Component {
         'Game Over!!!',
         `Your score is ${this.state.score} `
       )
-      this.componentDidMount(tru)
     }
     var randomIndex = Math.floor(Math.random() * indexes.length)
     randomIndex = indexes[randomIndex]
-    this._start();
     return randomIndex
   }
 
@@ -88,8 +47,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = 2
     this.setState({ 
-      positionValues : values ,
-      loading : false, score : 0 })
+      positionValues : values,
+      loading : false, 
+      score : 0,
+    })
     this.loadFonts()
   }
 
@@ -101,50 +62,11 @@ export default class GameClone extends Component {
     this.setState({ fontLoaded : true })
   }
 
-  onSwipeUp(gestureState) {
-    this.setState({myText: 'You swiped up!',iconName : "upcircle" });
-    this.checkUpSwipe();
-  }
- 
-  onSwipeDown(gestureState) {
-    this.setState({myText: 'You swiped down!',iconName : "downcircle" });
-    this.checkDownSwipe()
-  }
- 
-  onSwipeLeft(gestureState) {
-    this.setState({myText: 'You swiped left!',iconName : "leftcircle" });
-    this.checkLeftSwipe()
-  }
- 
-  onSwipeRight(gestureState) {
-    this.setState({myText: 'You swiped right!',iconName : "rightcircle"});
-    this.checkRightSwipe()
-  }
- 
-  onSwipe(gestureName, gestureState) {
-    const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
-    this.setState({gestureName: gestureName});
-    switch (gestureName) {
-      case SWIPE_UP:
-        this.setState({backgroundColor: '#E44236'});
-        break;
-      case SWIPE_DOWN:
-        this.setState({backgroundColor: '#E74292'});
-        break;
-      case SWIPE_LEFT:
-        this.setState({backgroundColor: '#6ab04c'});
-        break;
-      case SWIPE_RIGHT:
-        this.setState({backgroundColor: '#99AAAB'});
-        break;
-    }
-  }
-
   checkLeftSwipe = () => {
     var values = this.state.positionValues
     var numRow = this.state.numRows
     var score = this.state.score;
-    var currentPositionNumber , newlyMerged = [] ,valueFoundBeforeTermination ;
+    var currentPositionNumber, newlyMerged = [], valueFoundBeforeTermination;
     var check;
     for(var rowNumber = 0 ; rowNumber < numRow ; rowNumber++){
       for(var boxNumber = 2 ; boxNumber <= numRow ; boxNumber++){
@@ -173,7 +95,7 @@ export default class GameClone extends Component {
               values[currentPositionNumber] = null
             }
           }
-        }else{}       
+        }      
       }
     }
     var randomIndex = this.returnIndexForNew(values)
@@ -215,8 +137,6 @@ export default class GameClone extends Component {
             values[check-1] = values[currentPositionNumber]
             values[currentPositionNumber] = null
           }
-        }else{
-          //value is null
         }
       }
     }
@@ -263,8 +183,6 @@ export default class GameClone extends Component {
               values[currentPositionNumber] = null
             }
           }
-        }else{
-
         }
       }
     }
@@ -311,8 +229,6 @@ export default class GameClone extends Component {
               values[currentPositionNumber] = null
             }
           }
-        }else{
-
         }
       }
     }
@@ -334,59 +250,43 @@ export default class GameClone extends Component {
     }
     return(
       <View style={styles.row}>
-        <Animated.View
-        style={[{
-          opacity: this.state.fadeValue,
-        },styles.row]}
-        >
-          <View style={[styles.eachBox,{ backgroundColor : Colors[values[0].exponent] }]}>
-            <FadeInView position={(rowNumber * numRow + 1)} >
-              <Text style={styles.boxText}> { values[0].value } </Text>
-            </FadeInView>        
-          </View>
-          <View style={[styles.eachBox,{ backgroundColor : Colors[values[1].exponent] }]}>
-            <FadeInView position={(rowNumber * numRow + 2)}>
-              <Text style={styles.boxText}> { values[1].value } </Text>
-            </FadeInView>
-          </View>
-          <View style={[styles.eachBox,{ backgroundColor : Colors[values[2].exponent] }]}>
-           <FadeInView position={(rowNumber * numRow + 3)} >
-              <Text style={styles.boxText}> { values[2].value } </Text>
-            </FadeInView>        
-          </View>
-          <View style={[styles.eachBox,{ backgroundColor : Colors[values[3].exponent] }]}>
-           <FadeInView position={(rowNumber * numRow + 4)} >
-              <Text style={styles.boxText}> { values[3].value } </Text>
-            </FadeInView>
-          </View>
-        </Animated.View>
+        <View style={[styles.eachBox,{ backgroundColor : Colors[values[0].exponent] }]}>
+          <Text style={styles.boxText}> { values[0].value } </Text>      
+        </View>
+
+        <View style={[styles.eachBox,{ backgroundColor : Colors[values[1].exponent] }]}>
+          <Text style={styles.boxText}> { values[1].value } </Text>
+        </View>
+
+        <View style={[styles.eachBox,{ backgroundColor : Colors[values[2].exponent] }]}>
+          <Text style={styles.boxText}> { values[2].value } </Text>       
+        </View>
+        
+        <View style={[styles.eachBox,{ backgroundColor : Colors[values[3].exponent] }]}>
+          <Text style={styles.boxText}> { values[3].value } </Text>
+        </View>
       </View>
     )
   }
 
   render() {
  
-    const config = {
-      velocityThreshold: 0.01,
-      directionalOffsetThreshold: 40
-    };
- 
     if(this.state.loading || !this.state.fontLoaded){
       return(
-        <Text> wait</Text> 
+        <View style={styles.container}>
+          <ActivityIndicator />
+        </View>
       )
     }
 
     return (
       <GestureRecognizer
-        onSwipe={(direction, state) => this.onSwipe(direction, state)}
-        onSwipeUp={(state) => this.onSwipeUp(state)}
-        onSwipeDown={(state) => this.onSwipeDown(state)}
-        onSwipeLeft={(state) => this.onSwipeLeft(state)}
-        onSwipeRight={(state) => this.onSwipeRight(state)}
-        config={config}
+        onSwipeUp={this.checkUpSwipe}
+        onSwipeDown={this.checkDownSwipe}
+        onSwipeLeft={this.checkLeftSwipe}
+        onSwipeRight={this.checkRightSwipe}
         style={styles.container}
-        >
+      >
           <View style={styles.top}>
               <Text style={styles.topText}> Match And Win </Text>
               <Text style={styles.score}> SCORE : {this.state.score} </Text>
@@ -397,19 +297,10 @@ export default class GameClone extends Component {
               {this.returnRow(1)}
               {this.returnRow(2)}
               {this.returnRow(3)}
-              {/* {this.returnRow(4)} */}
             </View>
           </View>
           <View style={styles.bottom}>
-          <FadeInView>
-            <Text style={styles.myText}> {this.state.myText} </Text>
-          </FadeInView>
-            { this.state.iconName == "" ?
-                <FontAwesome name="hand-stop-o" size={24} color="#EAF0F1" /> :
-                <AntDesign name={this.state.iconName} size={30} color="#EAF0F1" />
-            }
           </View>
-          
       </GestureRecognizer>
     );
   }
@@ -442,9 +333,6 @@ const styles = StyleSheet.create({
   },
   topText : {
     fontSize : 35,color : "#EAF0F1",fontFamily : "Satisfy",textDecorationLine : "underline"
-  },
-  myText : {
-    fontSize : 30,color : "#EAF0F1",fontFamily : "Caveat"
   },
   score : {
     fontSize : 20,position : "absolute",right : 20,top : 120,color : "#EAF0F1",backgroundColor : "#E8290B",borderRadius : 20,
