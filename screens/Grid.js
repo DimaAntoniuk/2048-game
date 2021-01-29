@@ -5,7 +5,7 @@ import * as Font from 'expo-font';
 import {db, firebase} from '../api/firebase/firebase'
 
 
-export default class GameClone extends Component {
+export default class Grid extends Component {
  
   static navigationOptions = ({navigation}) => ({
     title: '',
