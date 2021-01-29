@@ -68,7 +68,7 @@ export default class GameClone extends Component {
         .then(doc => {
           const data = doc.data();
           console.log(data)
-          if (data && !data.get('gameEnd', true)) {
+          if (data && !data.gameEnd) {
             this.setState({ 
               positionValues : data['grid'],
               loading : false, 
@@ -191,7 +191,9 @@ export default class GameClone extends Component {
   }
 
   gameOver = () => {
-    this.saveToFirestore(true, this.state.positionValues, this.state.score)
+    if (this.state.gameMode == 'clossic') {
+      this.saveToFirestore(true, this.state.positionValues, this.state.score)
+    }
     this.setState({
       gameOver: true,
     })
@@ -247,7 +249,7 @@ export default class GameClone extends Component {
     this.setState({ positionValues : values, score })
     
     if (this.state.gameMode == 'classic') {
-     this.saveToFirestore(false, values, this.state.score)
+     this.saveToFirestore(false, values, score)
     }
 
     if (this.state.gameMode == 'turns') {
@@ -305,7 +307,7 @@ export default class GameClone extends Component {
     this.setState({ positionValues : values ,score })
     
     if (this.state.gameMode == 'classic') {
-     this.saveToFirestore(false, values, this.state.score)
+     this.saveToFirestore(false, values, score)
     }
 
     if (this.state.gameMode == 'turns') {
@@ -364,7 +366,10 @@ export default class GameClone extends Component {
     var randomIndex = this.returnIndexForNew(values)
     values[randomIndex] = this.state.step
     this.setState({ positionValues : values , score })
-    this.saveToFirestore(false, values, this.state.score)
+    
+    if (this.state.gameMode == 'classic') {
+      this.saveToFirestore(false, values, score)
+     }
 
     if (this.state.gameMode == 'turns') {
       var newTurns = this.state.turns - 1 + newlyMerged.length
@@ -424,7 +429,7 @@ export default class GameClone extends Component {
     this.setState({ positionValues : values , score })
     
     if (this.state.gameMode == 'classic') {
-     this.saveToFirestore(false, values, this.state.score)
+     this.saveToFirestore(false, values, score)
     }
 
     if (this.state.gameMode == 'turns') {
