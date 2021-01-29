@@ -541,8 +541,10 @@ export default class GameClone extends Component {
         <View style={styles.top}>
             <Text style={styles.score}>SCORE</Text>
             <Text style={styles.scoreCount}>{this.state.score}</Text>
-            {this.state.gameMode == 'timer' ? <Text style={styles.score}>{this.getTimerTime()}</Text> : <></>}
-            {this.state.gameMode == 'turns' ? <Text style={styles.score}>{this.state.turns}</Text> : <></>}
+            <View style={styles.timerTurns}>
+              {this.state.gameMode == 'timer' ? <Text style={styles.timerTurnsText}>Time: {this.getTimerTime()}</Text> : <></>}
+              {this.state.gameMode == 'turns' ? <Text style={styles.timerTurnsText}>Turns: {this.state.turns}</Text> : <></>}
+            </View>
             <TouchableOpacity disabled={this.state.previousTurn == null ? true : false}
                 onPress={this.handleUndo}
                 style={styles.undo}
@@ -605,7 +607,7 @@ const styles = StyleSheet.create({
     justifyContent : "center",
     borderRadius : 10,
     margin : 2,
-    borderWidth: 1,
+    borderWidth: 0.5,
   },
   // eachBox : {
   //   flex : 1,
@@ -625,6 +627,16 @@ const styles = StyleSheet.create({
     fontSize : 35,
     fontFamily : "Mont-Bold",
     color : "#EAF0F1",
+  },
+  timerTurns: {
+    position: 'absolute',
+    right: 20,
+    top: 120,
+  },
+  timerTurnsText: {
+    fontSize : 20,
+    fontFamily : "Montserrat",
+    color : "#f42a71",
   },
   score : {
     fontSize : 25,
