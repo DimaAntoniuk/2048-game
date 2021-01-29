@@ -14,7 +14,7 @@ export default class Leaderboard extends Component{
           <Text>{highScore}</Text>
           <Button 
             title='report'
-            onPress={() => handleReport(id)} 
+            onPress={() => Alert.alert('Reported user with id: ' + id)} 
           />
         </View>
     );
@@ -55,6 +55,9 @@ export default class Leaderboard extends Component{
                         renderItem={renderItem}
                         keyExtractor={item => item.id}
                     />
+                    <Text>Username</Text>
+                    <Text>High Score</Text>
+                    <Text>Report</Text>
                 </View>
             )}
         </View>
