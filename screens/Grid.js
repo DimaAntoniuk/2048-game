@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Font from 'expo-font';
-import {db, firebase} from '../api/firebase/firebase'
+import {db} from '../api/firebase/firebase'
 
 
 export default class GameClone extends Component {
@@ -120,11 +120,9 @@ export default class GameClone extends Component {
 
   saveToFirestore = (gameEnd, grid, score) => {
     var uid = this.props.navigation.state.params.uid
-    console.log('flex-users')
     db.collection('flex-users').doc(uid.toString()).get()
       .then(doc => {
         const data = doc.data();
-        console.log(doc.id, data);
         var highScore = data?data['highScore']:0
         if (this.state.score > highScore) {
           highScore = score
@@ -133,7 +131,8 @@ export default class GameClone extends Component {
           gameEnd: gameEnd,
           grid: grid,
           score: score,
-          highScore: highScore
+          highScore: highScore,
+          username: this.props.navigation.state.params.username
         }
         var userRef = db.collection('flex-users').doc(uid).set(new_data)
       })

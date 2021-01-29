@@ -27,7 +27,7 @@ export default class MainMenu extends Component {
     };
 
     startGame = () => {
-        this.props.navigation.navigate('Grid', {uid: firebase.auth().currentUser.uid})
+        this.props.navigation.navigate('Grid', {uid: firebase.auth().currentUser.uid, username: firebase.auth().currentUser.displayName})
     }
 
     render() {
