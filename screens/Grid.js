@@ -9,8 +9,8 @@ export default class GameClone extends Component {
     super(props);
     this.state = {
       loading : true,
-      backgroundColors : ["#616C6F", "#74B9FF", "#E83350", "#26ae60", "#F4C724", "#2475B0", "#EA425C", 
-      "#B83227", "#4BCFFA", "#45CE30", "#F3CC79","#192A56","#487EB0"],
+      backgroundColors : ["#616C6F", "#3a4ae7","#5343e6", "#7442dd","#9942db", "#b93ee3","#d23be1", "#e237d1","#ec36ba", "#f433a0",
+      "#f73087","#ff2f79","#487EB0"],
       gameOver : false,
       numRows : 4,
       score : 0,
@@ -56,8 +56,10 @@ export default class GameClone extends Component {
 
   loadFonts = async() => {
     await Font.loadAsync({
-      'Satisfy' : require("../assets/fonts/Satisfy-Regular.ttf"),
-      'Caveat' : require("../assets/fonts/Caveat-Regular.ttf"),
+      'Mont-Bold' : require("../assets/fonts/Montserrat-Bold.ttf"),
+      'Montserrat' : require("../assets/fonts/Montserrat-Medium.ttf"),
+      'Roboto' : require("../assets/fonts/Roboto-Regular.ttf"),
+      'SFProDisplay' : require("../assets/fonts/SFProDisplay-Regular.ttf"),
     })
     this.setState({ fontLoaded : true })
   }
@@ -308,34 +310,61 @@ export default class GameClone extends Component {
 
 const styles = StyleSheet.create({
   container : {
-    flex: 1,justifyContent : "center",flexDirection : "column",backgroundColor : "#777E8B",
+    flex: 1,
+    justifyContent : "center",
+    flexDirection : "column",
+    backgroundColor : "#1e252d",
   },
   top : {
-    flex : 2,justifyContent : "center",alignItems : "center"
+    flex : 2,
+    justifyContent : "center",
+    alignItems : "center"
   },
   middle : {
-    flex : 6,backgroundColor : "#2F363F"
+    flex : 6,
+    backgroundColor : "#2F363F"
   },
   box : {
-    flex : 1,flexDirection : "column",borderWidth : 2,borderColor : "#6ab04c",backgroundColor : "#EAF0F1"
+    flex : 1,
+    flexDirection : "column",
+    backgroundColor : "#1e252d",
+    // margin: 2                ///border outside tiles box
   },
   bottom : {
-    flex : 2, alignItems : "center",justifyContent : "center",flexDirection : "row"
+    flex : 2,
+    alignItems : "center",
+    justifyContent : "center",
+    flexDirection : "row"
   },
   row : {
-    flex : 1, flexDirection : "row"
+    flex : 1,
+    flexDirection : "row"
   },
   eachBox : {
-    flex : 1,borderWidth : 1,borderColor : "black",alignItems : "center",justifyContent : "center",borderRadius : 50
+    flex : 1,
+    alignItems : "center",
+    justifyContent : "center",
+    borderRadius : 15,
+    // width: 90,
+    // height: 90,
+    // borderRadius: 100 / 2,
+    margin : 2
   },
   boxText : {
-    fontSize : 28,color : "#EAF0F1",fontFamily : "Satisfy"
+    fontSize : 30,
+    color : "#0c0309",
   },
   topText : {
-    fontSize : 35,color : "#EAF0F1",fontFamily : "Satisfy",textDecorationLine : "underline"
+    fontSize : 35,
+    fontFamily : "Mont-Bold",
+    color : "#EAF0F1",
   },
   score : {
-    fontSize : 20,position : "absolute",right : 20,top : 120,color : "#EAF0F1",backgroundColor : "#E8290B",borderRadius : 20,
-    fontFamily : "Caveat"
+    fontSize : 20,
+    fontFamily : "Montserrat",
+    position : "absolute",
+    right : 20,
+    top : 120,
+    color : "#f42a71",
   }
 })
